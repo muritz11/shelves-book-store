@@ -1,0 +1,41 @@
+/* Import Chakra UI theme */
+/* @import '~@chakra-ui/theme'; */
+
+/* Access Chakra UI brand colors */
+/* :root {
+  --primary-color: var(--chakra-colors-brand-primary);
+  --secondary-color: var(--chakra-colors-brand-secondary);
+} */
+
+.navLink {
+    padding: 22px 16px;
+    transition: .3s ease-out;
+}
+
+.navLink:hover {
+    background-color: rgba(58, 64, 87, 0.1);
+}
+
+.activeNavLink, .activeMobileNavLink {
+    color: #3A4057;
+    background-color: rgba(58, 64, 87, 0.1);
+    border-bottom: 2px solid #3A4057;
+}
+
+.mobileNavLink {
+    padding: 8px;
+    display: block;
+    border-radius: 8px;
+    transition: .3s ease-out;
+}
+
+/* .activeMobileNavLink {
+    border-bottom: 0;
+} */
+
+
+.activeSideLink > div {
+    background: rgba(255, 214, 0, 1);
+    color: #000 !important;
+    border-radius: 8px;
+}

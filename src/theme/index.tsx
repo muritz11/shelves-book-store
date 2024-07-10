@@ -26,6 +26,62 @@ const components = {
       },
     }),
   },
+  ModalCloseButton: {
+    baseStyle: {
+      color: "brand.dangerDark",
+    },
+  },
+  Button: {
+    variants: {
+      light: {
+        color: "brand.black",
+        bg: "brand.lighterGrey",
+        fontWeight: 400,
+        _hover: {
+          bg: "brand.lightGrey",
+        },
+      },
+      dark: {
+        color: "brand.white",
+        bg: "#1F1F1F",
+        fontWeight: 400,
+        _hover: {
+          bg: "brand.black",
+        },
+        _disabled: {
+          bg: "brand.black",
+        },
+      },
+      primary: {
+        color: "brand.white",
+        bg: "brand.primary",
+        fontWeight: 400,
+        _hover: {
+          bg: "#171C2D",
+        },
+        _disabled: {
+          bg: "#171C2D",
+        },
+      },
+      danger: {
+        color: "brand.white",
+        bg: "brand.dangerDark",
+        fontWeight: 400,
+        _hover: {
+          bg: "brand.danger",
+        },
+      },
+      ghostDanger: {
+        color: "brand.dangerDark",
+        bg: "transparent",
+        fontWeight: 400,
+        _hover: {
+          color: "brand.white",
+          bg: "brand.dangerDark",
+        },
+      },
+    },
+  },
 };
 
 // 2. Add your color mode config
@@ -39,7 +95,7 @@ const theme = extendTheme({
   styles,
   components,
   colors: {
-    root: {
+    brand: {
       primary: "#232A44",
       primaryTint: "#646773",
       primaryDark: "#171C2D",
@@ -55,8 +111,8 @@ const theme = extendTheme({
       dangerDark: "#DE1135",
       warning: "#FFD600",
       textMuted: "#868686",
-      black: "#191919",
-      white: "#FFFFFF",
+      black: "#101010",
+      white: "#FCFDFF",
     },
     buttonPrimary: {
       50: "#E5E5E7",

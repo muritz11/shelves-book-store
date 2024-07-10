@@ -1,19 +1,16 @@
 // import { useDisclosure } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
-import RoutesAuth from "../../route/RoutesAuth";
-import TopNav from "../nav/TopNav";
+import Sidebar from "../nav/Sidebar";
 
 const Layout = () => {
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-
   return (
     <>
-      <div style={{ maxWidth: "1440px", margin: "auto" }}>
-        <RoutesAuth>
-          <TopNav onOpen={() => null} />
+      <Box bg={"#FAFAFB"}>
+        <Sidebar>
           <Outlet />
-        </RoutesAuth>
-      </div>
+        </Sidebar>
+      </Box>
     </>
   );
 };

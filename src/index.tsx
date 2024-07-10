@@ -5,6 +5,9 @@ import reportWebVitals from "./reportWebVitals";
 import "./assets/styles/App.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "./theme";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import "./assets/styles/fonts/fonts.css";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -12,7 +15,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <ChakraProvider theme={theme}>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </ChakraProvider>
   </React.StrictMode>
 );
