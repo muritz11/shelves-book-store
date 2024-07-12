@@ -58,7 +58,17 @@ const Routes = () => {
         },
         {
           path: "library",
-          element: <ComingSoon />,
+          element: <Outlet />,
+          children: [
+            {
+              path: "",
+              element: <Library />,
+            },
+            {
+              path: "view-book/:bid",
+              element: <ViewBook />,
+            },
+          ],
         },
         {
           path: "authors",
@@ -66,7 +76,7 @@ const Routes = () => {
         },
         {
           path: "settings",
-          element: <ComingSoon />,
+          element: <Settings />,
         },
       ],
     },
@@ -85,6 +95,9 @@ const ResetPassword = Loadable(
 
 // dashboard
 const Dashboard = Loadable(lazy(() => import("../pages/dashboard/Dashboard")));
+const Library = Loadable(lazy(() => import("../pages/dashboard/Library")));
+const ViewBook = Loadable(lazy(() => import("../pages/dashboard/ViewBook")));
+const Settings = Loadable(lazy(() => import("../pages/dashboard/Settings")));
 
 const ComingSoon = () => {
   return (

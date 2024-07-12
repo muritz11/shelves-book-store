@@ -1,12 +1,12 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { LoginBody, ResetPasswordBody } from "../types";
+// import { LoginBody, ResetPasswordBody } from "../types";
 import baseQuery from "./customFetchBase";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery,
   endpoints: (builder) => ({
-    signUp: builder.mutation<any, LoginBody>({
+    signUp: builder.mutation<any, any>({
       query: (data) => ({
         url: "/auth/register",
         method: "POST",
@@ -14,7 +14,7 @@ export const authApi = createApi({
       }),
       // transformResponse: (result: { data: { message: any } }) => result.data.message
     }),
-    login: builder.mutation<any, LoginBody>({
+    login: builder.mutation<any, any>({
       query: (data) => ({
         url: "/auth/login",
         method: "POST",
@@ -38,7 +38,7 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-    resetPassword: builder.mutation<any, ResetPasswordBody>({
+    resetPassword: builder.mutation<any, any>({
       query: (data) => ({
         url: "/auth/password-reset",
         method: "POST",
