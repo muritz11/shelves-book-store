@@ -1,4 +1,4 @@
-import { BookObj } from "./types";
+import { AuthorObj, BookObj } from "./types";
 
 export const Books: BookObj[] = [
   {
@@ -56,6 +56,34 @@ export const Books: BookObj[] = [
     numOfChapter: 20,
     synopsis:
       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam.",
+  },
+];
+
+export const authors: AuthorObj[] = [
+  {
+    id: "1",
+    name: "steven bartlett",
+    publications: ["1", "3", "4"],
+  },
+  {
+    id: "2",
+    name: "steven bartlett",
+    publications: ["1", "3", "4"],
+  },
+  {
+    id: "3",
+    name: "steven bartlett",
+    publications: ["1", "3", "4"],
+  },
+  {
+    id: "4",
+    name: "steven bartlett",
+    publications: ["1", "3", "4"],
+  },
+  {
+    id: "5",
+    name: "steven bartlett",
+    publications: ["1", "3", "4"],
   },
 ];
 

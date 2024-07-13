@@ -12,6 +12,13 @@ export interface BookObj {
   isFeatured?: boolean;
 }
 
+export interface AuthorObj {
+  id: string;
+  name: string;
+  coverUrl?: string;
+  publications: string[];
+}
+
 export interface UserDetailObj {
   firstname: "";
   lastname: "";

@@ -1,4 +1,4 @@
-import { Flex, Spinner } from "@chakra-ui/react";
+import { Spinner } from "@chakra-ui/react";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import Layout from "../components/dashboard/Layout";
@@ -72,7 +72,7 @@ const Routes = () => {
         },
         {
           path: "authors",
-          element: <ComingSoon />,
+          element: <Authors />,
         },
         {
           path: "settings",
@@ -97,21 +97,7 @@ const ResetPassword = Loadable(
 const Dashboard = Loadable(lazy(() => import("../pages/dashboard/Dashboard")));
 const Library = Loadable(lazy(() => import("../pages/dashboard/Library")));
 const ViewBook = Loadable(lazy(() => import("../pages/dashboard/ViewBook")));
+const Authors = Loadable(lazy(() => import("../pages/dashboard/Authors")));
 const Settings = Loadable(lazy(() => import("../pages/dashboard/Settings")));
-
-const ComingSoon = () => {
-  return (
-    <Flex
-      color={"root.textMuted"}
-      height={"70vh"}
-      justify={"center"}
-      align={"center"}
-      fontSize={"20px"}
-      fontWeight={500}
-    >
-      Coming soon
-    </Flex>
-  );
-};
 
 export default Routes;
