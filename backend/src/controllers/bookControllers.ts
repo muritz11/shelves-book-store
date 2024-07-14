@@ -16,7 +16,7 @@ export const fetchBooks = async (request: Request, response: Response) => {
   response.send({
     success: true,
     data: books,
-    totalPages: Math.ceil(count / Number(limit)),
+    total: count,
     currentPage: page,
   });
 };

@@ -16,7 +16,7 @@ export const fetchAuthors = async (request: Request, response: Response) => {
   response.send({
     success: true,
     data: authors,
-    totalPages: Math.ceil(count / Number(limit)),
+    total: count,
     currentPage: page,
   });
 };
