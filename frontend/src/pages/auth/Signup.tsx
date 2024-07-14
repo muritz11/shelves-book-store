@@ -7,13 +7,13 @@ import { checkEmptyFields } from "../../utils/helpers";
 import { showError, showSuccess } from "../../utils/Alert";
 import { useSignUpMutation } from "../../redux/services/authApi";
 
-const Signup = ({ signInEmail }: { signInEmail?: string }) => {
+const Signup = () => {
   const navigate = useNavigate();
   const [signupMutation, { isLoading: isSignupLoading }] = useSignUpMutation();
   const [formState, setFormState] = useState({
-    email: signInEmail || "",
+    fullName: "",
+    email: "",
     password: "",
-    // pushToken: "",
   });
 
   const handleInputs = (e: any) => {
@@ -25,32 +25,31 @@ const Signup = ({ signInEmail }: { signInEmail?: string }) => {
 
   const submitForm = async (e: any) => {
     e.preventDefault();
-    const { email, password } = formState;
+    const { email, password, fullName } = formState;
 
     const isFormEmpty = checkEmptyFields({
       email,
       password,
+      full_name: fullName,
     });
 
     if (!isFormEmpty) {
-      if (password.length < 6) {
-        showError("Password should be at least 6 characters");
+      if (password.length < 8) {
+        showError("Password should be at least 8 characters");
         return;
       }
 
-      signupMutation({ email, password })
+      signupMutation({ email, password, fullName })
         .unwrap()
         .then((resp) => {
           console.log(resp);
           showSuccess("User registration successful");
-          navigate("/verify", { state: { email } });
+          navigate("/");
         })
         .catch((err) => {
-          console.log("err verifying email", err);
           showError(
             err?.message ||
               err?.data?.message ||
-              err?.data?.error?.message ||
               "An error occurred, try again later"
           );
         });
@@ -60,6 +59,13 @@ const Signup = ({ signInEmail }: { signInEmail?: string }) => {
   return (
     <AuthLayout heading="Create a new account">
       <form onSubmit={submitForm}>
+        <CustomInput
+          label="Full name"
+          name="fullName"
+          value={formState.fullName}
+          onChange={handleInputs}
+          mb="13px"
+        />
         <CustomInput
           label="Your email"
           name="email"
@@ -76,14 +82,6 @@ const Signup = ({ signInEmail }: { signInEmail?: string }) => {
           onChange={handleInputs}
           mb="13px"
         />
-        {/* <CustomInput
-          label="Push token"
-          name="pushToken"
-          type="text"
-          value={formState.pushToken}
-          onChange={handleInputs}
-          mb="13px"
-        /> */}
         <Button
           type="submit"
           colorScheme={"buttonPrimary"}

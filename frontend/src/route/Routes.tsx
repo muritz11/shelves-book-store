@@ -2,9 +2,9 @@ import { Spinner } from "@chakra-ui/react";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Outlet } from "react-router-dom";
 import Layout from "../components/dashboard/Layout";
+import RoutesAuth from "./RoutesAuth";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
-import VerifyAccount from "../pages/auth/VerifyAccount";
 import ErrorPage from "../pages/ErrorPage";
 
 const Loadable = (Component: any) => (props: any) => {
@@ -42,15 +42,12 @@ const Routes = () => {
         { path: "", element: <Login /> },
         { path: "login", element: <Login /> },
         { path: "/signup", element: <Signup /> },
-        { path: "/verify", element: <VerifyAccount /> },
-        { path: "/forgot-password", element: <ForgotPassword /> },
-        { path: "/reset-password", element: <ResetPassword /> },
       ],
       errorElement: <ErrorPage />,
     },
     {
       path: "/",
-      element: <Layout />,
+      element: <RoutesAuth children={<Layout />} />,
       children: [
         {
           path: "dashboard",
@@ -84,14 +81,6 @@ const Routes = () => {
 
   return router;
 };
-
-// auth
-const ForgotPassword = Loadable(
-  lazy(() => import("../pages/auth/ForgotPassword"))
-);
-const ResetPassword = Loadable(
-  lazy(() => import("../pages/auth/ResetPassword"))
-);
 
 // dashboard
 const Dashboard = Loadable(lazy(() => import("../pages/dashboard/Dashboard")));

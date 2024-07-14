@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-// import { signOut } from "firebase/auth";
-// import { auth as firebaseAuth } from "../../firebase";
 
 export const auth = createSlice({
   name: "auth",
@@ -12,10 +10,8 @@ export const auth = createSlice({
       state.accessToken = action.payload;
     },
     logOutUser: (state) => {
-      //   await signOut(firebaseAuth);
       state.accessToken = "";
-      localStorage.removeItem("axxToken");
-      localStorage.removeItem("TFAVerified");
+      localStorage.removeItem("accessToken");
       window.location.replace("/");
     },
   },

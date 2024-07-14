@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Flex, Button } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CustomInput from "../../utils/CustomInput";
 import AuthLayout from "./AuthLayout";
@@ -10,8 +10,7 @@ import { checkEmptyFields } from "../../utils/helpers";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // TODO: change to /dashboard
-  const from = location.state?.from?.pathname || "/admin/ai-translator";
+  const from = location.state?.from?.pathname || "/dashboard";
   const [loginMutation, { isLoading: isLoginLoading }] = useLoginMutation();
   const [formState, setFormState] = useState({
     email: "",
@@ -45,19 +44,11 @@ const Login = () => {
         })
         .catch((err) => {
           console.log("login err", err);
-          const isEmailUnverified =
-            err?.data?.error?.code === "email-unverified";
-          if (isEmailUnverified) {
-            showError("Email address not verified");
-            navigate("/verify", { state: { email } });
-          } else {
-            showError(
-              err?.message ||
-                err?.data?.message ||
-                err?.data?.error?.message ||
-                "An error occurred, try again later"
-            );
-          }
+          showError(
+            err?.message ||
+              err?.data?.message ||
+              "An error occurred, try again later"
+          );
         });
     }
   };
@@ -81,17 +72,6 @@ const Login = () => {
           onChange={handleInputs}
           mb="13px"
         />
-        <Flex justify={"flex-end"}>
-          <Button
-            variant={"link"}
-            _hover={{ textDecor: "none" }}
-            as={Link}
-            to={"/forgot-password"}
-            fontWeight={500}
-          >
-            Forgot password?
-          </Button>
-        </Flex>
         <Button
           type="submit"
           colorScheme={"buttonPrimary"}

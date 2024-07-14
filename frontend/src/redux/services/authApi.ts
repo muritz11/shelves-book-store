@@ -21,37 +21,7 @@ export const authApi = createApi({
         body: data,
       }),
     }),
-    resendToken: builder.mutation<any, { email: string }>({
-      query: (data) => ({
-        url: "/auth/resend-token",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    verifyAccount: builder.mutation<
-      any,
-      { email: string; code: number | string }
-    >({
-      query: (data) => ({
-        url: "/auth/verify",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    resetPassword: builder.mutation<any, any>({
-      query: (data) => ({
-        url: "/auth/password-reset",
-        method: "POST",
-        body: data,
-      }),
-    }),
   }),
 });
 
-export const {
-  useSignUpMutation,
-  useLoginMutation,
-  useResendTokenMutation,
-  useVerifyAccountMutation,
-  useResetPasswordMutation,
-} = authApi;
+export const { useSignUpMutation, useLoginMutation } = authApi;

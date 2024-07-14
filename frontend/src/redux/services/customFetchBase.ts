@@ -1,18 +1,12 @@
-import { createStandaloneToast } from "@chakra-ui/react";
 import {
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query";
-// import { logOutUser } from "../features/authSlice";
-// import { signOut } from "firebase/auth";
-// import { auth } from "../../firebase";
-// import { logout } from "../features/authSlice";
-// import { redirect } from "react-router-dom";
 
-const baseUrl = "";
-const { toast } = createStandaloneToast();
+const baseUrl = "https://shelves-book-store.onrender.com/api/v1";
+// const { toast } = createStandaloneToast();
 
 const base = fetchBaseQuery({
   baseUrl,
@@ -37,14 +31,13 @@ const baseQuery: BaseQueryFn<
     // @ts-ignore
     result?.error?.status === 401
   ) {
-    toast({
-      position: "top-right",
-      description: "Session expired",
-      status: "error",
-      duration: 3000,
-      isClosable: true,
-    });
-
+    // toast({
+    //   position: "top-right",
+    //   description: "Session expired",
+    //   status: "error",
+    //   duration: 3000,
+    //   isClosable: true,
+    // });
     // await signOut(auth)
     // api.dispatch(logOutUser());
   }
