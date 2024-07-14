@@ -6,6 +6,7 @@ import {
   newBook,
   updateBookById,
 } from "../controllers/bookControllers";
+import auth from "../middleware/auth";
 
 const router = Router();
 
@@ -30,6 +31,7 @@ router.post(
     .not()
     .isEmpty()
     .withMessage("number of chapters is required"),
+  auth,
   newBook
 );
 
@@ -50,6 +52,7 @@ router.put(
     .not()
     .isEmpty()
     .withMessage("number of chapters is required"),
+  auth,
   updateBookById
 );
 
@@ -57,6 +60,6 @@ router.put(
  * delete book
  * req params: { authorId }
  **********************/
-router.delete("/:bookId", deleteBookById);
+router.delete("/:bookId", auth, deleteBookById);
 
 export default router;

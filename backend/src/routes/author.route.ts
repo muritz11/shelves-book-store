@@ -6,13 +6,14 @@ import {
   newAuthor,
   updateAuthorById,
 } from "../controllers/authorController";
+import auth from "../middleware/auth";
 
 const router = Router();
 
 /**********************
  * fetch all authors
  **********************/
-router.get("/", fetchAuthors);
+router.get("/", auth, fetchAuthors);
 
 /**********************
  * create new author
@@ -28,6 +29,7 @@ router.post(
   body("*").trim().escape(),
   body("name").not().isEmpty().withMessage("Name is required"),
   body("bio").not().isEmpty().withMessage("Bio is required"),
+  auth,
   newAuthor
 );
 
@@ -46,6 +48,7 @@ router.put(
   body("*").trim().escape(),
   body("name").not().isEmpty().withMessage("Name is required"),
   body("bio").not().isEmpty().withMessage("Bio is required"),
+  auth,
   updateAuthorById
 );
 
@@ -53,6 +56,6 @@ router.put(
  * delete author
  * req params: { authorId }
  **********************/
-router.delete("/:authorId", deleteAuthorById);
+router.delete("/:authorId", auth, deleteAuthorById);
 
 export default router;
