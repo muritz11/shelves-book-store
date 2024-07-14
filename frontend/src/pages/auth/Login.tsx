@@ -38,7 +38,7 @@ const Login = () => {
         .unwrap()
         .then((resp) => {
           console.log(resp);
-          localStorage.setItem("accessToken", resp?.data?.token);
+          localStorage.setItem("accessToken", resp?.token);
           showSuccess("Login successful");
           navigate(from);
         })

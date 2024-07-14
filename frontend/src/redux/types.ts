@@ -13,10 +13,11 @@ export interface BookObj {
 }
 
 export interface AuthorObj {
-  id: string;
+  _id: string;
   name: string;
+  bio: string;
   coverUrl?: string;
-  publications: string[];
+  publications?: string[];
 }
 
 export interface UserDetailObj {
