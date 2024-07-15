@@ -1,18 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-// const { ObjectId } = mongoose.Types;
-
-interface IProfilePicture {
-  secure_url: string;
-  publicId: string;
-}
-
 interface IUser extends Document {
   email: string;
   password: string;
   fullName: string;
-  coverUrl?: IProfilePicture;
-  // orders?: typeof ObjectId[];
+  coverUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -35,11 +27,7 @@ const UserSchema: Schema = new Schema(
       required: [true, "Please enter full name"],
       unique: false,
     },
-    coverUrl: {
-      url: String,
-      publicId: String,
-    },
-    // orders: [{ type: ObjectId, ref: "Orders" }],
+    coverUrl: { type: String },
   },
   {
     timestamps: true,
