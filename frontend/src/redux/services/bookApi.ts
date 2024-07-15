@@ -18,6 +18,10 @@ export const bookApi = createApi({
       query: (query) => `/books${query || ""}`,
       providesTags: ["books"],
     }),
+    fetchGenres: builder.query<string[], string | void>({
+      query: () => `/books/genres`,
+      transformResponse: (result: { data: string[] }) => result.data,
+    }),
     fetchSingleBooks: builder.query<SingleBookObj, string>({
       query: (bid) => `/books/${bid}`,
       transformResponse: (result: { data: SingleBookObj }) => result.data,
@@ -31,8 +35,8 @@ export const bookApi = createApi({
       invalidatesTags: ["books"],
     }),
     updateBook: builder.mutation<any, any>({
-      query: (data: { aid: string; body: any }) => ({
-        url: `/books/${data.aid}`,
+      query: (data: { bid: string; body: any }) => ({
+        url: `/books/${data.bid}`,
         method: "PUT",
         body: data.body,
       }),
@@ -50,6 +54,7 @@ export const bookApi = createApi({
 
 export const {
   useFetchBooksQuery,
+  useFetchGenresQuery,
   useFetchSingleBooksQuery,
   useAddBookMutation,
   useUpdateBookMutation,

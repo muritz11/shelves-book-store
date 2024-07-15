@@ -3,7 +3,10 @@ export interface BookObj {
   _id?: string;
   title: string;
   genre: string;
-  author: string;
+  author: {
+    name: string;
+    _id: string;
+  };
   synopsis: string;
   coverUrl: string;
   likes?: string[];
