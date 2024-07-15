@@ -28,12 +28,17 @@ import {
   useUpdateAuthorsMutation,
 } from "../../redux/services/authorApi";
 import { showError, showSuccess } from "../../utils/Alert";
-import { checkEmptyFields, truncateText } from "../../utils/helpers";
+import {
+  capitalizeFirstText,
+  checkEmptyFields,
+  truncateText,
+} from "../../utils/helpers";
 import Loader from "../../utils/Loader";
 import CustomModal from "../../utils/CustomModal";
 import CustomInput from "../../utils/CustomInput";
 import CustomText from "../../utils/CustomText";
 import Pagination from "../../utils/Pagination";
+import BookColumnCard from "../../utils/BookColumnCard";
 
 const Authors = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -302,6 +307,11 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
     onClose: onUpdateModalClose,
   } = useDisclosure();
   const {
+    isOpen: isPublicationsModalOpen,
+    onOpen: onPublicationsModalOpen,
+    onClose: onPublicationsModalClose,
+  } = useDisclosure();
+  const {
     isOpen: isDelModalOpen,
     onOpen: onDelModalOpen,
     onClose: onDelModalClose,
@@ -434,6 +444,7 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
               size={"sm"}
               fontWeight={400}
               textDecor={"underline"}
+              onClick={onPublicationsModalOpen}
             >
               Publications
             </Button>
@@ -460,6 +471,23 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
         primaryBtnAction={deleteItem}
         isActionLoading={isDelItemLoading}
       />
+
+      <CustomModal
+        isOpen={isPublicationsModalOpen}
+        onClose={onPublicationsModalClose}
+        title={`${capitalizeFirstText(val?.name)}'s publications`}
+      >
+        {val?.books?.map((value) => (
+          <BookColumnCard book={value} key={value?._id} />
+        ))}
+        {!val?.books?.length ? (
+          <Text textAlign={"center"} color={"brand.textMuted"} mb={7}>
+            No publications yet
+          </Text>
+        ) : (
+          ""
+        )}
+      </CustomModal>
 
       <CustomModal
         isOpen={isUpdateModalOpen}

@@ -1,6 +1,6 @@
 import { showError } from "./Alert";
 
-const capitalizeFirstText = (str: string) => {
+export const capitalizeFirstText = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 

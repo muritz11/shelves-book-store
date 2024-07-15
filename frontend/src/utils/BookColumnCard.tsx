@@ -19,6 +19,8 @@ const BookColumnCard = ({ book }: { book: BookObj }) => {
         mb={"10px"}
         bg={"brand.white"}
         rounded={"16px"}
+        border={"1px solid"}
+        borderColor={"brand.lightGrey"}
         shadow={"0px 4px 16px 0px rgba(0, 0, 0, 0.06)"}
         padding={"12px"}
         onClick={viewGame}

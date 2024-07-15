@@ -36,7 +36,7 @@ export interface AuthorObj {
   name: string;
   bio: string;
   coverUrl?: string;
-  publications?: string[];
+  books?: BookObj[];
 }
 
 export interface UserDetailObj {
