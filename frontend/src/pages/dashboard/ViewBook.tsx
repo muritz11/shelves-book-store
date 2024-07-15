@@ -11,25 +11,41 @@ import {
   ModalContent,
   ModalOverlay,
   useMediaQuery,
-  Heading,
   Icon,
 } from "@chakra-ui/react";
 import LayoutContainerWrapper from "../../components/dashboard/LayoutContainerWrapper";
 import LotteryBg from "../../assets/images/logo.png";
-import { useParams } from "react-router-dom";
-import { Books } from "../../redux/data";
-import { FaStar } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
+import { FaHeart, FaStar } from "react-icons/fa";
+import { useFetchSingleBooksQuery } from "../../redux/services/bookApi";
+import { useEffect } from "react";
+import { showError } from "../../utils/Alert";
+import BookColumnCard from "../../utils/BookColumnCard";
 
 const ViewGame = () => {
   const { bid } = useParams();
   const [isSmallerThan1375] = useMediaQuery("(max-width: 1365px)");
   const [isLargerThan769] = useMediaQuery("(min-width: 769px)");
   const {
-    isOpen: isGMModalOpen,
-    onOpen: onGMModalOpen,
-    onClose: onGMModalClose,
+    isOpen: isAuthorModalOpen,
+    onOpen: onAuthorModalOpen,
+    onClose: onAuthorModalClose,
   } = useDisclosure();
-  const book = Books[Number(bid) - 1];
+  const bookRating = 0;
+  // const book = Books[Number(bid) - 1];
+  const {
+    data: book,
+    isLoading: isBookLoading,
+    isError: isBookError,
+  } = useFetchSingleBooksQuery(bid || "");
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isBookError) {
+      navigate(-1);
+      showError("Could not fetch book");
+    }
+  }, [isBookError, navigate]);
 
   return (
     <>
@@ -37,6 +53,7 @@ const ViewGame = () => {
         asideChildren={<Aside />}
         mainWidth={{ base: "100%", md: "70%" }}
         asideWidth={{ base: "100%", md: "30%" }}
+        isContentLoading={isBookLoading}
       >
         <Flex
           align={"center"}
@@ -70,13 +87,14 @@ const ViewGame = () => {
                   as="span"
                   textDecor={"underline"}
                   cursor="pointer"
-                  onClick={onGMModalOpen}
+                  onClick={onAuthorModalOpen}
                   textTransform={"capitalize"}
                 >
-                  {book?.author}
+                  {book?.author?.name}
                 </Text>
               </Text>
               <Text
+                fontSize={"12px"}
                 rounded={"30px"}
                 display={"inline"}
                 color={"brand.textMuted"}
@@ -85,26 +103,49 @@ const ViewGame = () => {
               >
                 Genre: {book?.genre}
               </Text>
-              <Flex
-                padding={"2px 5px"}
-                bg={"brand.secondaryTint"}
-                rounded={"30px"}
-                gap={"5px"}
-                align={"center"}
-                width={"max-content"}
-              >
-                <Icon
-                  as={FaStar}
-                  fontSize={["14px", "18px"]}
-                  color={"brand.secondary"}
-                />
-                <Text
-                  display={"inline-block"}
-                  fontSize={"12px"}
-                  color={"#48494D"}
+              <Flex gap={2}>
+                <Flex
+                  padding={"2px 5px"}
+                  bg={"brand.secondaryTint"}
+                  rounded={"30px"}
+                  gap={"5px"}
+                  align={"center"}
+                  width={"max-content"}
                 >
-                  {book?.rating || 0}
-                </Text>
+                  <Icon
+                    as={FaStar}
+                    fontSize={["14px", "18px"]}
+                    color={"brand.secondary"}
+                  />
+                  <Text
+                    display={"inline-block"}
+                    fontSize={"12px"}
+                    color={"#48494D"}
+                  >
+                    {bookRating || 0}
+                  </Text>
+                </Flex>
+                <Flex
+                  padding={"2px 5px"}
+                  bg={"brand.dangerTint"}
+                  rounded={"30px"}
+                  gap={"5px"}
+                  align={"center"}
+                  width={"max-content"}
+                >
+                  <Icon
+                    as={FaHeart}
+                    fontSize={["14px", "18px"]}
+                    color={"brand.dangerDark"}
+                  />
+                  <Text
+                    display={"inline-block"}
+                    fontSize={"12px"}
+                    color={"#48494D"}
+                  >
+                    {book?.likes?.length}
+                  </Text>
+                </Flex>
               </Flex>
             </Flex>
           </Flex>
@@ -130,11 +171,11 @@ const ViewGame = () => {
             </Button>
             <Button
               size={"lg"}
-              variant={"light"}
+              variant={"danger"}
               alignSelf={"flex-start"}
               width={["full", "50%"]}
             >
-              Add to my list
+              Add to favorites
             </Button>
           </Flex>
         </Box>
@@ -142,9 +183,9 @@ const ViewGame = () => {
 
       {/* Modal */}
       <Modal
-        isOpen={isGMModalOpen}
-        onClose={onGMModalClose}
-        size={{ base: "xs", md: "md" }}
+        isOpen={isAuthorModalOpen}
+        onClose={onAuthorModalClose}
+        size={{ base: "xs", md: "sm" }}
         isCentered
       >
         <ModalOverlay />
@@ -152,83 +193,30 @@ const ViewGame = () => {
           <ModalCloseButton />
           <ModalBody py={"30px"} px={{ base: 4, md: 6 }} shadow={"md"}>
             <Flex
-              direction={{ base: "column", md: "row" }}
+              direction={{ base: "column" }}
               alignItems={"center"}
               justifyContent={"space-between"}
               mt={{ base: 0, md: 5 }}
             >
               <Avatar
-                boxSize={{ base: "100px", md: "120px" }}
-                name={book?.author}
-                src={""}
+                boxSize={{ base: "100px" }}
+                name={book?.author?.name}
+                src={book?.author?.coverUrl}
                 fontSize={"42px"}
                 fontWeight={"semibold"}
                 flexShrink={0}
               />
-
-              <Flex
-                flexDirection="column"
-                gap="10px"
-                w={{ base: "100%", md: "calc(100% - 140px)" }}
-              >
-                <Flex
-                  justify={"space-between"}
-                  align={"center"}
-                  direction={{ base: "column", md: "row" }}
-                  gap={1}
-                >
-                  <Heading
-                    fontSize={{ base: "20px" }}
-                    fontWeight={700}
-                    textAlign={{ base: "center", lg: "left" }}
-                    textTransform={"capitalize"}
-                    mt={{ base: "10px", lg: "0" }}
-                  >
-                    {book?.author}
-                  </Heading>
-                </Flex>
-                <Flex
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  bg={"#f3f3f3"}
-                  border={"1px solid #E1E2E5"}
-                  py={"15px"}
-                  px={"27px"}
-                  borderRadius={"100px"}
-                >
-                  <Box
-                    display={"flex"}
-                    flexDirection={"column"}
-                    alignItems={"center"}
-                  >
-                    <Text fontSize={"17px"} fontWeight={"semibold"}>
-                      {0}
-                    </Text>
-                    <Text
-                      whiteSpace={"nowrap"}
-                      fontSize={{ base: "14px", lg: "14px" }}
-                    >
-                      Books published
-                    </Text>
-                  </Box>
-                  <Box
-                    display={"flex"}
-                    flexDirection={"column"}
-                    alignItems={"center"}
-                  >
-                    <Text fontSize={"17px"} fontWeight={"semibold"}>
-                      {0}
-                    </Text>
-                    <Text
-                      whiteSpace={"nowrap"}
-                      fontSize={{ base: "14px", lg: "14px" }}
-                    >
-                      Awards
-                    </Text>
-                  </Box>
-                </Flex>
-              </Flex>
             </Flex>
+            <Text
+              fontSize={"18px"}
+              fontWeight={500}
+              textAlign={"center"}
+              mt={4}
+              mb={1}
+            >
+              Biography
+            </Text>
+            <Text>{book?.author?.bio}</Text>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -240,7 +228,22 @@ const ViewGame = () => {
  * Aside
  ************************/
 const Aside = () => {
-  return <></>;
+  const { bid } = useParams();
+
+  const { data: book } = useFetchSingleBooksQuery(bid || "");
+
+  return (
+    <>
+      <Box>
+        <Text fontWeight={500} mb={3}>
+          Other books by {book?.author?.name}
+        </Text>
+        {book?.authorsBooks?.map((value) => (
+          <BookColumnCard book={value} key={value?._id} />
+        ))}
+      </Box>
+    </>
+  );
 };
 
 interface DisplayBoxProp {

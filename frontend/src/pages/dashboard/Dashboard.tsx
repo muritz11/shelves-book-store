@@ -1,5 +1,5 @@
-import { Box, Button, Flex, Heading } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { Box, Text, Button, Flex, Heading } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import FeaturedBookCard from "../../components/cards/FeaturedBookCard";
 import BookCard from "../../components/cards/BookCard";
@@ -11,49 +11,26 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // @ts-ignore
 import Slider from "react-slick";
-import { BookObj } from "../../redux/types";
-import { Books, MyFaves } from "../../redux/data";
+import { useFetchBooksQuery } from "../../redux/services/bookApi";
+import Loader from "../../utils/Loader";
+import { useFetchMeQuery } from "../../redux/services/accountApi";
 
 const Dashboard = () => {
-  const [tab, setTab] = useState("Trending");
-  const tabs = useMemo(() => ["Trending", "Top rated", "My Favorites"], []);
-  const [featuredBooks, setFeaturedBooks] = useState<BookObj[]>([]);
-  const [booksArr, setBooksArr] = useState<BookObj[]>([]);
-
-  useEffect(() => {
-    const featured = Books.filter((book) => book?.isFeatured);
-    setFeaturedBooks(featured);
-  }, []);
-
-  useEffect(() => {
-    const trendingTab = tabs[0];
-    const topRated = tabs[1];
-    const favorites = tabs[2];
-
-    let filteredBooks = [];
-    switch (tab) {
-      case trendingTab:
-        filteredBooks = Books;
-        break;
-
-      case topRated:
-        filteredBooks = Books?.sort((a, b) => {
-          const ratingA = a.rating === undefined ? -Infinity : a.rating;
-          const ratingB = b.rating === undefined ? -Infinity : b.rating;
-          return ratingB - ratingA;
-        });
-        break;
-
-      case favorites:
-        filteredBooks = Books?.filter((books) => MyFaves?.includes(books?.id));
-        break;
-
-      default:
-        filteredBooks = Books;
-        break;
-    }
-    setBooksArr(filteredBooks);
-  }, [tab, tabs]);
+  const [tab, setTab] = useState("latest");
+  const tabs = useMemo(
+    () => [
+      { label: "Latest", value: "latest" },
+      { label: "Top rated", value: "topRated" },
+      { label: "My Favorites", value: "liked" },
+    ],
+    []
+  );
+  const { data: user } = useFetchMeQuery();
+  const { data: books, isFetching: isBooksFetching } = useFetchBooksQuery(
+    `?limit=${10}&page=${1}&filter=${tab}&userId=${user?._id || ""}`
+  );
+  const { data: featuredBooks, isLoading: isFeaturedBooksLoading } =
+    useFetchBooksQuery(`?limit=${100}&filter=featured`);
 
   var settings = {
     dots: true,
@@ -75,12 +52,12 @@ const Dashboard = () => {
       <LayoutContainerWrapper asideChildren={<Aside />}>
         <Box mb={"24px"} minH={"200px"}>
           <Slider {...settings}>
-            {featuredBooks.map((book) => (
-              <FeaturedBookCard key={book?.id} book={book} />
+            {featuredBooks?.data.map((book) => (
+              <FeaturedBookCard key={book?._id} book={book} />
             ))}
           </Slider>
-          {/* <Loader isLoading={isLiveGamesLoading} height="100px" /> */}
-          {/* {!isLiveGamesLoading && !featuredGames?.length ? (
+          <Loader isLoading={isFeaturedBooksLoading} height="100px" />
+          {!isFeaturedBooksLoading && !featuredBooks?.data?.length ? (
             <Flex
               height={"232px"}
               rounded={"16px"}
@@ -112,7 +89,7 @@ const Dashboard = () => {
             </Flex>
           ) : (
             ""
-          )} */}
+          )}
         </Box>
 
         <Box>
@@ -126,17 +103,17 @@ const Dashboard = () => {
               {tabs.map((value, index) => (
                 <HorizontalTabButton
                   key={`hTab-${index}`}
-                  title={value.toLowerCase()}
+                  title={value.label.toLowerCase()}
                   onClick={() => {
-                    switchTab(value);
+                    switchTab(value.value);
                   }}
-                  isActive={tab === value}
+                  isActive={tab === value.value}
                 />
               ))}
             </Flex>
           </Box>
 
-          {/* games */}
+          {/* books */}
           <Box mt={"15px"}>
             <Flex
               gap={4}
@@ -144,22 +121,23 @@ const Dashboard = () => {
               overflowY={"visible"}
               className={"hScroll"}
             >
-              {booksArr?.map((book, idx) => (
-                <BookCard key={`lt-${idx}`} book={book} />
-              ))}
+              {!isBooksFetching &&
+                books?.data?.map((book) => (
+                  <BookCard key={book?._id} book={book} />
+                ))}
             </Flex>
-            {/* <Loader isLoading={isLiveGamesLoading} height="80px" />
-            {!isLiveGamesLoading && !gamesArr?.length ? (
+            <Loader isLoading={isBooksFetching} height="80px" />
+            {!isBooksFetching && !books?.data?.length ? (
               <Text textAlign={"center"} color={"brand.textMuted"} my={"100px"}>
                 Nothing to show here
               </Text>
             ) : (
               ""
-            )} */}
+            )}
             <Flex
               mt={"30px"}
               justify={"center"}
-              // display={isLiveGamesLoading ? "none" : "flex"}
+              display={isBooksFetching ? "none" : "flex"}
             >
               <Button
                 w={["60%"]}
@@ -178,42 +156,7 @@ const Dashboard = () => {
 };
 
 const Aside = () => {
-  // const { formatMoney } = useTextTruncate();
-  // const [mainWallet, setMainWallet] = useState<null | WalletTypeObj>(null);
-  // const {
-  //   data: walletBalance,
-  //   isSuccess: isWalletBalanceSuccess,
-  //   isLoading: isWalletBalanceLoading,
-  // } = useFetchWalletBalanceQuery();
-
-  // useEffect(() => {
-  //   if (isWalletBalanceSuccess) {
-  //     const mainWallet = walletBalance?.filter(
-  //       (val) => val?.type?.toLowerCase() === "main"
-  //     );
-
-  //     setMainWallet(mainWallet[0]);
-  //   }
-  // }, [isWalletBalanceSuccess, walletBalance]);
-
-  return (
-    <>
-      {/* <BalanceCard
-        title={"Wallet Balance"}
-        figure={formatMoney(mainWallet?.balance || 0)}
-        isBalanceLoading={isWalletBalanceLoading}
-        variant={"aside"}
-      />
-      <BalanceCard
-        title={"Locked Balance"}
-        figure={formatMoney(mainWallet?.lockedBalance || 0)}
-        isBalanceLoading={isWalletBalanceLoading}
-        variant={"aside"}
-      />
-      <QuestProgress />
-      <ContactCard /> */}
-    </>
-  );
+  return <></>;
 };
 
 export default Dashboard;

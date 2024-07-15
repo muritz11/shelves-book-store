@@ -28,11 +28,11 @@ interface CardProps {
 
 const BookCard = ({ minW, book }: CardProps) => {
   const navigate = useNavigate();
-  // const { formatDuration } = useTimeFormatter();
-  // const timeLeft = formatDuration(book?.endOn);
+  // TODO: calc rating
+  const bookRating = 0;
 
   const redirectUrl = () => {
-    navigate(`/library/view-book/${book?.id}`);
+    navigate(`/library/view-book/${book?._id}`);
   };
 
   return (
@@ -76,12 +76,16 @@ const BookCard = ({ minW, book }: CardProps) => {
               color={"brand.secondary"}
             />
             <Text display={"inline-block"} fontSize={"12px"} color={"#48494D"}>
-              {book?.rating || 0}
+              {bookRating || 0}
             </Text>
           </Flex>
           <Icon as={BsThreeDots} fontSize={["25px", "25px"]} color={"#fff"} />
         </Flex>
-        <Flex justify={"flex-end"} align={"center"}>
+        <Flex
+          justify={"flex-end"}
+          align={"center"}
+          display={book?.isFeatured ? "flex" : "none"}
+        >
           <Icon
             as={MdVerified}
             color={"brand.secondary"}
@@ -106,7 +110,7 @@ const BookCard = ({ minW, book }: CardProps) => {
             color={"brand.dangerDark"}
           />
           <Text display={"inline-block"} fontSize={"12px"} color={"#48494D"}>
-            {book?.likes || 0}
+            {book?.likes?.length}
           </Text>
         </Flex>
       </Flex>

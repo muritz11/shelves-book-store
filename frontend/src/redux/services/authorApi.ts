@@ -14,7 +14,7 @@ export const authorApi = createApi({
   baseQuery,
   tagTypes: ["authors"],
   endpoints: (builder) => ({
-    fetchAuthors: builder.query<AuthorResult, string>({
+    fetchAuthors: builder.query<AuthorResult, string | void>({
       query: (query?: string) => `/authors${query || ""}`,
       providesTags: ["authors"],
       // transformResponse: (results: AuthorObj) =>

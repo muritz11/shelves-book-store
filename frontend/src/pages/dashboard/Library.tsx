@@ -23,8 +23,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 // @ts-ignore
 import Slider from "react-slick";
-import { BookObj } from "../../redux/types";
-import { Books, MyReadingList } from "../../redux/data";
+import { useFetchBooksQuery } from "../../redux/services/bookApi";
+import Loader from "../../utils/Loader";
+import { useFetchMeQuery } from "../../redux/services/accountApi";
 
 const Filters = [
   {
@@ -33,17 +34,26 @@ const Filters = [
   },
 ];
 
-const Lotteries = () => {
+const Library = () => {
+  const limit = 12;
+  const [offset, setOffset] = useState(limit);
   const [filter, setFilter] = useState(Filters[0].value);
   const [isSmallerThan1260] = useMediaQuery("(max-width: 1260px)");
   const [isLargerThan550] = useMediaQuery("(min-width: 550px)");
-  const [readingList, setReadingList] = useState<BookObj[]>([]);
+  const { data: user } = useFetchMeQuery();
+  const {
+    data: books,
+    isFetching: isBooksFetching,
+    isLoading: isBooksLoading,
+  } = useFetchBooksQuery(`?limit=${offset}&page=${1}`);
+  const { data: likedBooks, isLoading: isLikedBooksFetching } =
+    useFetchBooksQuery(
+      `?limit=${50}&filter=${"liked"}&userId=${user?._id || ""}`
+    );
 
-  useEffect(() => {
-    const rl = Books?.filter((val) => MyReadingList.includes(val?.id));
-
-    setReadingList(rl);
-  }, []);
+  const viewMore = () => {
+    setOffset(offset + limit);
+  };
 
   return (
     <>
@@ -51,7 +61,7 @@ const Lotteries = () => {
         <Box mb={"24px"} minH={"100px"}>
           <Flex justify={"space-between"} align={"center"}>
             <Heading fontSize={"24px"} fontWeight={500}>
-              My reading list
+              My favorites
             </Heading>
             {/* <Text
               _hover={{ textDecor: "underline" }}
@@ -60,11 +70,19 @@ const Lotteries = () => {
               <Link to={"/library"}>My faves</Link>
             </Text> */}
           </Flex>
+          {!isLikedBooksFetching && !likedBooks?.data?.length ? (
+            <Text textAlign={"center"} color={"brand.textMuted"} my={"50px"}>
+              Nothing to show here
+            </Text>
+          ) : (
+            ""
+          )}
           <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} gap={4} mt={"10px"}>
-            {readingList?.map((book) => (
+            {likedBooks?.data?.map((book) => (
               <BookCardMini key={book?.id} book={book} />
             ))}
           </SimpleGrid>
+          <Loader isLoading={isLikedBooksFetching} height="200px" />
         </Box>
 
         <Box>
@@ -102,13 +120,13 @@ const Lotteries = () => {
 
           {/* games */}
           <Box mt={"10px"}>
-            {/* {!isLiveGamesLoading && !liveGames?.length ? (
-                <Text textAlign={"center"} color={"brand.textMuted"} my={"100px"}>
-                  Nothing to show here
-                </Text>
-              ) : (
-                ""
-              )} */}
+            {!isBooksFetching && !books?.data?.length ? (
+              <Text textAlign={"center"} color={"brand.textMuted"} my={"100px"}>
+                Nothing to show here
+              </Text>
+            ) : (
+              ""
+            )}
             <SimpleGrid
               columns={{
                 base: isLargerThan550 ? 3 : 2,
@@ -117,12 +135,22 @@ const Lotteries = () => {
               }}
               gap={4}
             >
-              {Books?.map((book) => (
-                <BookCard key={book?.id} book={book} />
+              {books?.data?.map((book) => (
+                <BookCard key={book?._id} book={book} />
               ))}
             </SimpleGrid>
-            <Flex mt={"30px"} justify={"center"}>
-              <Button w={["60%"]} colorScheme={"buttonPrimary"}>
+            <Loader isLoading={isBooksLoading} height="200px" />
+            <Flex
+              mt={"30px"}
+              justify={"center"}
+              display={offset >= (books?.total || 0) ? "none" : "flex"}
+            >
+              <Button
+                w={["60%"]}
+                colorScheme={"buttonPrimary"}
+                onClick={viewMore}
+                isLoading={isBooksFetching}
+              >
                 View more
               </Button>
             </Flex>
@@ -134,12 +162,8 @@ const Lotteries = () => {
 };
 
 const Aside = () => {
-  const [featuredBooks, setFeaturedBooks] = useState<BookObj[]>([]);
-
-  useEffect(() => {
-    const featured = Books.filter((book) => book?.isFeatured);
-    setFeaturedBooks(featured);
-  }, []);
+  const { data: featuredBooks, isLoading: isFeaturedBooksLoading } =
+    useFetchBooksQuery(`?limit=${100}&filter=featured`);
 
   var settings = {
     dots: true,
@@ -155,7 +179,7 @@ const Aside = () => {
   return (
     <>
       <Slider {...settings}>
-        {featuredBooks.map((book) => (
+        {featuredBooks?.data?.map((book) => (
           <FeaturedBookCardMini key={book?.id} book={book} />
         ))}
       </Slider>
@@ -163,4 +187,4 @@ const Aside = () => {
   );
 };
 
-export default Lotteries;
+export default Library;

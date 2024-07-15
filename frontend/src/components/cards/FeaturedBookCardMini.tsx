@@ -17,7 +17,7 @@ const FeaturedBookCardMini = ({ book }: { book: BookObj }) => {
   const navigate = useNavigate();
 
   const viewGame = () => {
-    navigate(`/library/view-book/${book?.id}`);
+    navigate(`/library/view-book/${book?._id}`);
   };
 
   return (
@@ -61,7 +61,7 @@ const FeaturedBookCardMini = ({ book }: { book: BookObj }) => {
               color={"brand.secondary"}
             />
             <Text display={"inline-block"} fontSize={"12px"} color={"#48494D"}>
-              {book?.rating || 0}
+              {0}
             </Text>
           </Flex>
         </Flex>

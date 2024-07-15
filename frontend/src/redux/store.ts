@@ -6,6 +6,7 @@ import { authApi } from "./services/authApi";
 import authReducer from "./features/authSlice";
 import { accountApi } from "./services/accountApi";
 import { authorApi } from "./services/authorApi";
+import { bookApi } from "./services/bookApi";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [accountApi.reducerPath]: accountApi.reducer,
     [authorApi.reducerPath]: authorApi.reducer,
+    [bookApi.reducerPath]: bookApi.reducer,
   },
   devTools: process.env.NODE_ENV === "development",
   middleware: (getDefaultMiddleware) =>
@@ -20,6 +22,7 @@ export const store = configureStore({
       authApi.middleware,
       accountApi.middleware,
       authorApi.middleware,
+      bookApi.middleware,
     ]),
 });
 

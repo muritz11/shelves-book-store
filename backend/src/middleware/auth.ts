@@ -29,7 +29,6 @@ const authMiddleware = async (
       _id: decodedToken?.userId,
       "tokens.token": token,
     });
-    console.log("user is:", user);
 
     if (!user) {
       throw new Error();

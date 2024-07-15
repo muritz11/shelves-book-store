@@ -9,7 +9,6 @@ export const Books: BookObj[] = [
     genre: "business",
     numOfChapter: 20,
     isFeatured: true,
-    rating: 4,
     synopsis:
       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam.",
   },
@@ -21,7 +20,6 @@ export const Books: BookObj[] = [
     genre: "business",
     numOfChapter: 20,
     isFeatured: true,
-    rating: 4,
     synopsis:
       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam.",
   },
@@ -32,7 +30,6 @@ export const Books: BookObj[] = [
     coverUrl: "",
     genre: "business",
     numOfChapter: 20,
-    rating: 3,
     synopsis:
       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam.",
   },
@@ -43,7 +40,6 @@ export const Books: BookObj[] = [
     coverUrl: "https://nigeriannewsleader.com/images/the_diary_of_a_ceo.jpg",
     genre: "business",
     numOfChapter: 20,
-    rating: 2,
     synopsis:
       "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quia praesentium accusamus numquam error inventore ullam consequatur eius. Corrupti laudantium at, tempora reprehenderit ab fugit quidem libero ut expedita quisquam nam.",
   },

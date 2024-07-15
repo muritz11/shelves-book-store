@@ -10,8 +10,7 @@ export const accountApi = createApi({
     fetchMe: builder.query<UserDetailObj, void>({
       query: () => "/user/me",
       providesTags: ["user"],
-      transformResponse: (results: { data: { user: UserDetailObj } }) =>
-        results.data.user,
+      transformResponse: (results: { data: UserDetailObj }) => results.data,
     }),
   }),
 });

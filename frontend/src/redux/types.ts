@@ -1,15 +1,31 @@
 export interface BookObj {
   id: string;
+  _id?: string;
   title: string;
   genre: string;
   author: string;
   synopsis: string;
   coverUrl: string;
-  likes?: string;
-  reads?: number;
+  likes?: string[];
+  reader?: string[];
   numOfChapter: number;
-  rating?: number;
+  rating?: { user?: string; rating?: number }[];
   isFeatured?: boolean;
+}
+
+export interface SingleBookObj {
+  _id?: string;
+  title: string;
+  genre: string;
+  author: AuthorObj;
+  synopsis: string;
+  coverUrl: string;
+  likes?: string[];
+  reader?: string[];
+  numOfChapter: number;
+  rating?: { user?: string; rating?: number }[];
+  isFeatured?: boolean;
+  authorsBooks?: BookObj[];
 }
 
 export interface AuthorObj {
@@ -21,8 +37,8 @@ export interface AuthorObj {
 }
 
 export interface UserDetailObj {
-  firstname: "";
-  lastname: "";
-  username: "";
-  coverUrl: "";
+  _id: string;
+  email: string;
+  fullName: string;
+  coverUrl?: string;
 }
