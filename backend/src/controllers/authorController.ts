@@ -1,24 +1,38 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import Author from "../db/authorModel";
+import Books from "../db/bookModel";
 
 // fetch authors
 export const fetchAuthors = async (request: Request, response: Response) => {
-  const { page = 1, limit = 10 } = request.query;
+  try {
+    const { page = 1, limit = 10 } = request.query;
 
-  const authors = await Author.find()
-    .limit(Number(limit) * 1)
-    .skip((Number(page) - 1) * Number(limit))
-    .sort({ createdAt: -1 });
+    // Fetch authors with pagination
+    const authors = await Author.find()
+      .limit(Number(limit) * 1)
+      .skip((Number(page) - 1) * Number(limit))
+      .sort({ createdAt: -1 });
 
-  const count = await Author.countDocuments();
+    // Fetch books for each author
+    const authorsWithBooks = await Promise.all(
+      authors.map(async (author) => {
+        const books = await Books.find({ author: author._id });
+        return { ...author.toObject(), books };
+      })
+    );
 
-  response.send({
-    success: true,
-    data: authors,
-    total: count,
-    currentPage: page,
-  });
+    const count = await Author.countDocuments();
+
+    response.send({
+      success: true,
+      data: authorsWithBooks,
+      total: count,
+      currentPage: page,
+    });
+  } catch (error) {
+    response.status(500).send({ success: false, message: error.message });
+  }
 };
 
 export const newAuthor = async (request: Request, response: Response) => {
