@@ -3,7 +3,7 @@ import { validationResult } from "express-validator";
 import Book from "../db/bookModel";
 
 export const fetchBooks = async (request: Request, response: Response) => {
-  const { page = 1, limit = 10, filter, userId } = request.query;
+  const { page = 1, limit = 10, filter, genre, userId } = request.query;
 
   // Initialize the query object
   const query: any = {};
@@ -15,6 +15,8 @@ export const fetchBooks = async (request: Request, response: Response) => {
     query.rating = { $exists: true, $ne: [] };
   } else if (filter === "liked" && userId) {
     query.likes = { $elemMatch: { $eq: userId } };
+  } else if (filter === "genre" && genre) {
+    query.genre = genre
   }
 
   const books = await Book.find(query)
