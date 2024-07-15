@@ -13,7 +13,7 @@ const normalizePort = (val: string): string | number | boolean => {
   return false;
 };
 
-const port = normalizePort(process.env.PORT || "3000");
+const port = normalizePort(process.env.PORT || "8000");
 app.set("port", port);
 
 const errorHandler = (error: NodeJS.ErrnoException): void => {

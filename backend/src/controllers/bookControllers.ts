@@ -46,20 +46,40 @@ export const fetchBooks = async (request: Request, response: Response) => {
 
 export const fetchBooksById = async (request: Request, response: Response) => {
   const { bookId } = request.params;
-  const book = await Book.findById(bookId).populate("author");
+  try {
+    const book = await Book.findById(bookId).populate("author");
 
-  if (!book) {
-    return response
-      .status(404)
-      .send({ success: false, message: "Book not found" });
+    if (!book) {
+      return response
+        .status(404)
+        .send({ success: false, message: "Book not found" });
+    }
+
+    const authorsBooks = await Book.find({ author: book.author._id });
+
+    response.send({
+      success: true,
+      data: { ...book.toObject(), authorsBooks },
+    });
+  } catch (error) {
+    response.status(500).send({
+      success: false,
+      error,
+    });
   }
+};
 
-  const authorsBooks = await Book.find({ author: book.author._id });
+export const fetchGenres = async (request: Request, response: Response) => {
+  try {
+    const uniqueGenres = await Book.distinct("genre");
 
-  response.send({
-    success: true,
-    data: { ...book.toObject(), authorsBooks },
-  });
+    response.send({
+      success: true,
+      data: uniqueGenres,
+    });
+  } catch (error) {
+    response.status(500).send({ success: false, message: error.message });
+  }
 };
 
 export const newBook = async (request: Request, response: Response) => {

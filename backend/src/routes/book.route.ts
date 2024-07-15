@@ -4,6 +4,7 @@ import {
   deleteBookById,
   fetchBooks,
   fetchBooksById,
+  fetchGenres,
   newBook,
   updateBookById,
 } from "../controllers/bookControllers";
@@ -16,6 +17,11 @@ const router = Router();
  * query: { page?: number, limit?: number, filter: "featured" | "topRated" | "liked", userId?: string }
  **********************/
 router.get("/", fetchBooks);
+
+/**********************
+ * fetch all books
+ **********************/
+router.get("/genres", fetchGenres);
 
 /**********************
  * fetch book by id
