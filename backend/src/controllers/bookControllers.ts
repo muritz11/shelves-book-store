@@ -46,11 +46,13 @@ export const fetchBooks = async (request: Request, response: Response) => {
 
 export const fetchBooksById = async (request: Request, response: Response) => {
   const { bookId } = request.params;
-  const book = await Book.findById(bookId);
+  const book = await Book.findById(bookId).populate("author");
+
+  const authorsBiblio = await Book.find({ author: book.author._id });
 
   response.send({
     success: true,
-    data: book,
+    data: { ...book, authorsBiblio },
   });
 };
 
