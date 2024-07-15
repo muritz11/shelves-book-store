@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import Users from "../db/userModel";
 
 // Interface to extend the Express Request object with user property
 interface CustomRequest extends Request {
@@ -22,10 +23,19 @@ const authMiddleware = async (
     }
 
     const token = authHeader.split(" ")[1];
-    const decodedToken = await jwt.verify(token, "RANDOM-TOKEN");
-    request.user = decodedToken;
+    const decodedToken = jwt.verify(token, "RANDOM-TOKEN");
+    const user = await Users.findOne({
+      // @ts-ignore
+      _id: decodedToken?.userId,
+      "tokens.token": token,
+    });
+    console.log("user is:", user);
 
-    // Open the way for the next endpoint
+    if (!user) {
+      throw new Error();
+    }
+
+    request.user = user;
     next();
   } catch (error) {
     response.status(401).json({

@@ -1,5 +1,22 @@
+import { Request, Response } from "express";
 import { validationResult } from "express-validator";
 import User from "../db/userModel";
+
+export const fetchMe = async (request: Request, response: Response) => {
+  // @ts-ignore
+  if (!request.user) {
+    return response.status(401).json({
+      success: false,
+      message: "Unauthorized request",
+    });
+  }
+
+  response.send({
+    success: true,
+    // @ts-ignore
+    data: request.user,
+  });
+};
 
 export const fetchUsers = async (request, response) => {
   // const users = await User.find({ userType: "user" }).populate("orders");

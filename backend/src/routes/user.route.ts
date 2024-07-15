@@ -5,9 +5,14 @@ import {
   fetchUsers,
   updateProfile,
   deleteUser,
+  fetchMe,
 } from "../controllers/usersController";
 
 const router = Router();
+
+// fetch profile
+router.get("/me", auth, fetchMe);
+
 
 // get all users
 router.get("/users", auth, fetchUsers);
