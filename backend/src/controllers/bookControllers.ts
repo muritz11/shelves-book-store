@@ -3,21 +3,54 @@ import { validationResult } from "express-validator";
 import Book from "../db/bookModel";
 
 export const fetchBooks = async (request: Request, response: Response) => {
-  const { page = 1, limit = 10 } = request.query;
+  const { page = 1, limit = 10, filter, userId } = request.query;
 
-  const books = await Book.find()
+  // Initialize the query object
+  const query: any = {};
+
+  // Apply filter based on query parameters
+  if (filter === "featured") {
+    query.isFeatured = true;
+  } else if (filter === "topRated") {
+    query.rating = { $exists: true, $ne: [] };
+  } else if (filter === "liked" && userId) {
+    query.likes = { $elemMatch: { $eq: userId } };
+  }
+
+  const books = await Book.find(query)
     .populate("author")
     .limit(Number(limit) * 1)
     .skip((Number(page) - 1) * Number(limit))
     .sort({ createdAt: -1 });
 
-  const count = await Book.countDocuments();
+  // If filtering by top rated, sort by average rating
+  if (filter === "topRated") {
+    books.sort((a, b) => {
+      const avgRatingA =
+        a.rating.reduce((sum, r) => sum + r.rating, 0) / a.rating.length || 0;
+      const avgRatingB =
+        b.rating.reduce((sum, r) => sum + r.rating, 0) / b.rating.length || 0;
+      return avgRatingB - avgRatingA;
+    });
+  }
+
+  const count = await Book.countDocuments(query);
 
   response.send({
     success: true,
     data: books,
     total: count,
     currentPage: page,
+  });
+};
+
+export const fetchBooksById = async (request: Request, response: Response) => {
+  const { bookId } = request.params;
+  const book = await Book.findById(bookId);
+
+  response.send({
+    success: true,
+    data: book,
   });
 };
 

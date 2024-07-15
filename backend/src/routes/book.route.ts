@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import {
   deleteBookById,
   fetchBooks,
+  fetchBooksById,
   newBook,
   updateBookById,
 } from "../controllers/bookControllers";
@@ -12,8 +13,14 @@ const router = Router();
 
 /**********************
  * fetch all books
+ * query: { page?: number, limit?: number, filter: "featured" | "topRated" | "liked", userId?: string }
  **********************/
 router.get("/", fetchBooks);
+
+/**********************
+ * fetch book by id
+ **********************/
+router.get("/:bookId", fetchBooksById);
 
 /**********************
  * create new book
