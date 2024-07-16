@@ -42,6 +42,7 @@ import CustomInput from "../../utils/CustomInput";
 import CustomText from "../../utils/CustomText";
 import CustomDropdown from "../../utils/CustomDropdown";
 import { useUploadFileMutation } from "../../redux/services/fileApi";
+import CustomDataListInput from "../../utils/CustomDataListInput";
 
 const Library = () => {
   const limit = 12;
@@ -201,6 +202,7 @@ const Library = () => {
             synopsis: "",
             numOfChapter: "",
           });
+          setPreview("");
           onAddModalClose();
         })
         .catch((err) => {
@@ -362,11 +364,13 @@ const Library = () => {
               value={formState.title}
               onChange={handleInputs}
             />
-            <CustomInput
+            <CustomDataListInput
               label="Genre"
               name="genre"
               value={formState.genre}
               onChange={handleInputs}
+              list={genres || []}
+              id={"genres"}
             />
             <Box>
               <FormLabel fontSize={"16px"} fontWeight={500}>

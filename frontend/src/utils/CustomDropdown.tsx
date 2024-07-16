@@ -51,6 +51,7 @@ const CustomDropdown = ({
           textAlign={"left"}
           variant={"outline"}
           fontWeight={400}
+          textTransform={"capitalize"}
         >
           <Text as={"span"} display={"flex"} align={"center"}>
             {dropdownIcon ? (
@@ -66,6 +67,7 @@ const CustomDropdown = ({
             <MenuItem
               key={`drp-${val?.name}-${idx}`}
               onClick={() => itemOnClick(val?.value)}
+              textTransform={"capitalize"}
             >
               {val?.icon && (
                 <Image boxSize={"20px"} src={val?.icon} mr={"12px"} alt="" />

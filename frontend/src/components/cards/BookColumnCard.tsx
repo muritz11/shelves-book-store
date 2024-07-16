@@ -1,9 +1,9 @@
 import React from "react";
 import { Box, Flex, Text } from "@chakra-ui/react";
-import { truncateText } from "./helpers";
+import { truncateText } from "../../utils/helpers";
 import { useNavigate } from "react-router-dom";
-import { BookObj } from "../redux/types";
-import DefaultBg from "../assets/images/logo.png";
+import { BookObj } from "../../redux/types";
+import DefaultBg from "../../assets/images/logo.png";
 
 const BookColumnCard = ({ book }: { book: BookObj }) => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const BookColumnCard = ({ book }: { book: BookObj }) => {
         onClick={viewGame}
         gap={3}
       >
-        <Box boxSize={"44px"} bg={"grey"} rounded={"8px"}>
+        <Box boxSize={"44px"} bg={"grey"} rounded={"8px"} overflow={"hidden"}>
           <img
             src={book?.coverUrl || DefaultBg}
             width={"100%"}
@@ -44,7 +44,9 @@ const BookColumnCard = ({ book }: { book: BookObj }) => {
           >
             {truncateText(book?.title, 18)}
           </Text>
-          <Text fontSize={"14px"}>{truncateText(book?.genre, 20)}</Text>
+          <Text fontSize={"14px"} color={"brand.textMuted"}>
+            {truncateText(book?.genre, 20)}
+          </Text>
         </Box>
       </Flex>
     </>

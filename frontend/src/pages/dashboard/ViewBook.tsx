@@ -20,7 +20,7 @@ import { FaHeart, FaStar } from "react-icons/fa";
 import { useFetchSingleBooksQuery } from "../../redux/services/bookApi";
 import { useEffect } from "react";
 import { showError } from "../../utils/Alert";
-import BookColumnCard from "../../utils/BookColumnCard";
+import BookColumnCard from "../../components/cards/BookColumnCard";
 
 const ViewGame = () => {
   const { bid } = useParams();

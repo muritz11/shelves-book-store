@@ -38,7 +38,7 @@ import CustomModal from "../../utils/CustomModal";
 import CustomInput from "../../utils/CustomInput";
 import CustomText from "../../utils/CustomText";
 import Pagination from "../../utils/Pagination";
-import BookColumnCard from "../../utils/BookColumnCard";
+import BookColumnCard from "../../components/cards/BookColumnCard";
 import { useUploadFileMutation } from "../../redux/services/fileApi";
 
 const Authors = () => {
@@ -76,7 +76,7 @@ const Authors = () => {
   const fileOnChange = (e: React.FocusEvent<HTMLInputElement>) => {
     let images = e.target.files;
 
-    const allowedExtensions = /(\.jpeg|\.jpg|\.png)$/i;
+    const allowedExtensions = /(\.jpeg|\.jpg|\.png|\.webp)$/i;
     if (!allowedExtensions.exec(e.target.value)) {
       showError("Invalid file type");
       return false;
@@ -156,6 +156,7 @@ const Authors = () => {
             name: "",
             bio: "",
           });
+          setPreview("");
           onAddModalClose();
         })
         .catch((err) => {
@@ -350,7 +351,7 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
   const fileOnChange = (e: React.FocusEvent<HTMLInputElement>) => {
     let images = e.target.files;
 
-    const allowedExtensions = /(\.jpeg|\.jpg|\.png)$/i;
+    const allowedExtensions = /(\.jpeg|\.jpg|\.png|\.webp)$/i;
     if (!allowedExtensions.exec(e.target.value)) {
       showError("Invalid file type");
       return false;
