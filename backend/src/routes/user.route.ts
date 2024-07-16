@@ -34,11 +34,8 @@ router.delete(
 * route url: baseUrl/user/update-profile
 * endpoint request: 
 {
-    "email": String,
     "fullName": String,
-    "phone": String,
-    "profilePictureUrl": String | opt,
-    "profilePicturePID": String | opt,
+    "coverUrl": String,
 }
 **********************/
 router.post(

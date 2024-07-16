@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logOutUser } from "../../redux/features/authSlice";
 import { ChangeEvent, useState } from "react";
+import { useFetchMeQuery } from "../../redux/services/accountApi";
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
@@ -27,6 +28,7 @@ interface MobileProps extends FlexProps {
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: user } = useFetchMeQuery();
 
   const logOut = () => {
     // await signOut(auth);
@@ -36,7 +38,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
   const navigate = useNavigate();
   const handleSearch = (e: ChangeEvent<HTMLFormElement>) => {
     e.preventDefault();
-    navigate(`/lotteries/view-game/${searchQuery}`);
+    navigate(`/search?query=${searchQuery}`);
   };
 
   return (
@@ -107,17 +109,15 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                 <HStack>
                   <Avatar
                     size={"sm"}
-                    // name={`${user?.name} ${user?.name[user?.name?.length - 1]}`}
-                    color={"brand.primary"}
-                    bg={"brand.secondary"}
-                    // src={user?.picture || userProfile?.photoUrl}
+                    name={`${user?.fullName}`}
+                    src={user?.coverUrl}
                   />
                   <Text
                     fontSize="sm"
                     display={{ base: "none", lg: "block" }}
                     textTransform={"capitalize"}
                   >
-                    user
+                    {user?.fullName?.split(" ")[0]}
                   </Text>
                   <Box>
                     <FiChevronDown />

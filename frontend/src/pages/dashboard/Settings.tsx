@@ -9,24 +9,30 @@ import {
   FormLabel,
   Heading,
   Input,
-  Text,
 } from "@chakra-ui/react";
-import CustomDropdown from "../../utils/CustomDropdown";
 import { showError, showSuccess } from "../../utils/Alert";
 import { checkEmptyFields } from "../../utils/helpers";
+import {
+  useFetchMeQuery,
+  useUpdateProfileMutation,
+} from "../../redux/services/accountApi";
+import { useUploadFileMutation } from "../../redux/services/fileApi";
 
 const EditProfile = () => {
   const fileElement: { current: any } | null = useRef(null);
   const [file, setFile] = useState<File | undefined>();
   const [preview, setPreview] = useState<string>("");
+  const { data: user, isSuccess: isUserSuccess } = useFetchMeQuery();
 
   const [formState, setFormState] = useState({
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    dob: "",
-    gender: "",
+    fullName: "",
   });
+
+  useEffect(() => {
+    if (isUserSuccess) {
+      setFormState((prevState) => ({ ...prevState, fullName: user?.fullName }));
+    }
+  }, [isUserSuccess, user?.fullName]);
 
   const handleInputs = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,18 +78,40 @@ const EditProfile = () => {
     }
   };
 
+  const [updateProfile, { isLoading: isUpdateProfileLoading }] =
+    useUpdateProfileMutation();
+  const [uploadFile, { isLoading: isUploadFileLoading }] =
+    useUploadFileMutation();
   const submitForm = async () => {
-    const { firstName, middleName, lastName, gender, dob } = formState;
+    const { fullName } = formState;
     const isEmpty = checkEmptyFields({
-      first_name: firstName,
-      middle_name: middleName,
-      last_name: lastName,
-      gender,
-      date_of_birth: dob,
+      name: fullName,
     });
 
     if (!isEmpty) {
-      showSuccess("profile update not yet available");
+      const fd: { fullName: string; coverUrl?: string } = { ...formState };
+
+      if (file) {
+        const fileForm = new FormData();
+        fileForm.append("file", file);
+
+        await uploadFile(fileForm)
+          .unwrap()
+          .then((resp) => {
+            fd["coverUrl"] = resp?.data?.secure_url;
+          })
+          .catch((err) => console.log("could not upload photo", err));
+      }
+
+      updateProfile(fd)
+        .unwrap()
+        .then(() => {
+          showSuccess("Profile updated succesfully");
+        })
+        .catch((err) => {
+          console.log(err);
+          showError(err?.message || err?.date?.message || "An error occurred");
+        });
     }
   };
 
@@ -110,8 +138,8 @@ const EditProfile = () => {
         m={"auto"}
       >
         <Avatar
-          name={`user`}
-          src={"" || preview}
+          name={user?.fullName}
+          src={user?.coverUrl || preview}
           boxSize={"120px"}
           fontWeight={"semibold"}
         />
@@ -125,11 +153,6 @@ const EditProfile = () => {
         <Button variant={"outline"} bg={"inherit"} onClick={clickFileElem}>
           Change profile picture
         </Button>
-
-        <Text textAlign={"center"} color={"#868686"} fontSize={"14px"}>
-          At least 800 x 800 px recommended. <br />
-          JPG or PNG allowed
-        </Text>
       </Flex>
 
       <Box my={"20px"}>
@@ -138,40 +161,14 @@ const EditProfile = () => {
 
       <Box>
         <Flex direction={"column"} gap={"30px"}>
-          <Flex gap={"10px"}>
-            <FormControl isRequired>
-              <FormLabel fontSize={"14px"} fontWeight={"semibold"}>
-                First Name
-              </FormLabel>
-              <Input
-                focusBorderColor={"gray.300"}
-                value={formState.firstName}
-                name={"firstName"}
-                onChange={handleInputs}
-              />
-            </FormControl>
-
-            <FormControl isRequired>
-              <FormLabel fontSize={"14px"} fontWeight={"semibold"}>
-                Middle Name
-              </FormLabel>
-              <Input
-                focusBorderColor={"gray.300"}
-                value={formState.middleName}
-                name={"middleName"}
-                onChange={handleInputs}
-              />
-            </FormControl>
-          </Flex>
-
           <FormControl isRequired>
             <FormLabel fontSize={"14px"} fontWeight={"semibold"}>
-              Last Name
+              Full Name
             </FormLabel>
             <Input
               focusBorderColor={"gray.300"}
-              value={formState.lastName}
-              name={"lastName"}
+              value={formState.fullName}
+              name={"fullName"}
               onChange={handleInputs}
             />
           </FormControl>
@@ -180,43 +177,7 @@ const EditProfile = () => {
             <FormLabel fontSize={"14px"} fontWeight={"semibold"}>
               Email Address
             </FormLabel>
-            <Input
-              focusBorderColor={"gray.300"}
-              value={"john@doe.com"}
-              readOnly
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel fontSize={"14px"} fontWeight={"semibold"}>
-              Date of Birth
-            </FormLabel>
-            <Input
-              type="date"
-              value={formState.dob}
-              name={"dob"}
-              onChange={handleInputs}
-            />
-          </FormControl>
-
-          <FormControl isRequired>
-            <FormLabel fontSize={"14px"} fontWeight={"semibold"}>
-              Gender
-            </FormLabel>
-            <CustomDropdown
-              value={formState.gender}
-              itemOnClick={(val) => setFormState({ ...formState, gender: val })}
-              dropdownItems={[
-                {
-                  name: "Male",
-                  value: "male",
-                },
-                {
-                  name: "Female",
-                  value: "female",
-                },
-              ]}
-            />
+            <Input focusBorderColor={"gray.300"} value={user?.email} readOnly />
           </FormControl>
 
           <Box display="flex" justifyContent="flex-end" gap={4}>
@@ -228,7 +189,7 @@ const EditProfile = () => {
               colorScheme={"buttonPrimary"}
               color={"white"}
               onClick={submitForm}
-              //   isLoading={isUpdateProfileLoading}
+              isLoading={isUpdateProfileLoading || isUploadFileLoading}
             >
               Update
             </Button>

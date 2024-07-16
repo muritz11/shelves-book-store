@@ -75,6 +75,16 @@ const Routes = () => {
           path: "settings",
           element: <Settings />,
         },
+        {
+          path: "search",
+          element: (
+            <div
+              style={{ width: "100%", textAlign: "center", marginTop: "100px" }}
+            >
+              coming soon
+            </div>
+          ),
+        },
       ],
     },
   ]);

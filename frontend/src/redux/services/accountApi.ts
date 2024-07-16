@@ -12,7 +12,15 @@ export const accountApi = createApi({
       providesTags: ["user"],
       transformResponse: (results: { data: UserDetailObj }) => results.data,
     }),
+    updateProfile: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/user/update-profile`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["user"],
+    }),
   }),
 });
 
-export const { useFetchMeQuery } = accountApi;
+export const { useFetchMeQuery, useUpdateProfileMutation } = accountApi;
