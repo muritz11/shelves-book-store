@@ -4,6 +4,8 @@ import userRouter from "./user.route";
 import authorRouter from "./author.route";
 import bookRouter from "./book.route";
 import fileRouter from "./file.route";
+import { search } from "../controllers/searchController";
+import auth from "../middleware/auth";
 
 const router = Router();
 
@@ -17,5 +19,7 @@ router.use("/user", userRouter);
 router.use("/authors", authorRouter);
 router.use("/books", bookRouter);
 router.use("/file", fileRouter);
+
+router.get("/search", auth, search);
 
 export default router;
