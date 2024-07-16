@@ -26,7 +26,7 @@ router.get("/", auth, fetchAuthors);
 **********************/
 router.post(
   "/",
-  body("*").trim().escape(),
+  body("*").trim(),
   body("name").not().isEmpty().withMessage("Name is required"),
   body("bio").not().isEmpty().withMessage("Bio is required"),
   auth,
@@ -45,7 +45,7 @@ router.post(
 **********************/
 router.put(
   "/:authorId",
-  body("*").trim().escape(),
+  body("*").trim(),
   body("name").not().isEmpty().withMessage("Name is required"),
   body("bio").not().isEmpty().withMessage("Bio is required"),
   auth,

@@ -43,14 +43,7 @@ router.delete(
 **********************/
 router.post(
   "/update-profile",
-  body("email").not().isEmpty().withMessage("email id is required"),
   body("fullName").not().isEmpty().withMessage("full name is required"),
-  body("phone")
-    .not()
-    .isEmpty()
-    .withMessage("phone is required")
-    .isLength({ min: 11 })
-    .withMessage("Phone must be up to 11 characters"),
   auth,
   updateProfile
 );

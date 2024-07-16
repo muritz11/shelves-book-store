@@ -35,7 +35,7 @@ router.get("/:bookId", fetchBooksById);
 **********************/
 router.post(
   "/",
-  body("*").trim().escape(),
+  body("*").trim(),
   body("title").not().isEmpty().withMessage("title is required"),
   body("genre").not().isEmpty().withMessage("genre is required"),
   body("author").not().isEmpty().withMessage("author is required"),
@@ -56,7 +56,7 @@ router.post(
 **********************/
 router.put(
   "/:bookId",
-  body("*").trim().escape(),
+  body("*").trim(),
   body("title").not().isEmpty().withMessage("title is required"),
   body("genre").not().isEmpty().withMessage("genre is required"),
   body("author").not().isEmpty().withMessage("author is required"),

@@ -48,9 +48,8 @@ export const updateProfile = async (request, response) => {
     }
   }
 
-  curUser.fullName = body.fullName;
-  curUser.email = body.email;
-  curUser.coverUrl = body.coverUrl;
+  curUser.fullName = body?.fullName;
+  curUser.coverUrl = body?.coverUrl;
 
   curUser
     .save()
