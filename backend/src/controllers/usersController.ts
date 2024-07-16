@@ -50,10 +50,7 @@ export const updateProfile = async (request, response) => {
 
   curUser.fullName = body.fullName;
   curUser.email = body.email;
-  curUser.coverUrl = {
-    secure_url: body.profilePictureUrl ? body.profilePictureUrl : "",
-    publicId: body.profilePicturePID ? body.profilePictureUrl : "",
-  };
+  curUser.coverUrl = body.coverUrl;
 
   curUser
     .save()
