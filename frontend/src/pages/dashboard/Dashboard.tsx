@@ -26,7 +26,7 @@ const Dashboard = () => {
     []
   );
   const { data: user } = useFetchMeQuery();
-  const { data: books, isFetching: isBooksFetching } = useFetchBooksQuery(
+  const { data: books, isLoading: isBooksFetching } = useFetchBooksQuery(
     `?limit=${10}&page=${1}&filter=${tab}&userId=${user?._id || ""}`
   );
   const { data: featuredBooks, isLoading: isFeaturedBooksLoading } =

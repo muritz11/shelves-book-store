@@ -27,6 +27,13 @@ export const bookApi = createApi({
       query: (bid) => `/books/${bid}`,
       transformResponse: (result: { data: SingleBookObj }) => result.data,
     }),
+    toggleLike: builder.mutation<any, any>({
+      query: (data) => ({
+        url: "/books/toggle-like",
+        method: "POST",
+        body: data,
+      }),
+    }),
     addBook: builder.mutation<any, any>({
       query: (data) => ({
         url: "/books",
@@ -60,4 +67,5 @@ export const {
   useAddBookMutation,
   useUpdateBookMutation,
   useDeleteBookMutation,
+  useToggleLikeMutation,
 } = bookApi;

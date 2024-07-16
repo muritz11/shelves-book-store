@@ -19,10 +19,12 @@ import DefaultBg from "../../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
 import { BookObj } from "../../redux/types";
 import { checkEmptyFields, truncateText } from "../../utils/helpers";
-import { FaHeart, FaStar } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { BsThreeDots } from "react-icons/bs";
 import {
   useDeleteBookMutation,
+  useFetchBooksQuery,
+  useToggleLikeMutation,
   useUpdateBookMutation,
 } from "../../redux/services/bookApi";
 import { showSuccess, showError } from "../../utils/Alert";
@@ -35,6 +37,8 @@ import CustomInput from "../../utils/CustomInput";
 import CustomModal from "../../utils/CustomModal";
 import CustomText from "../../utils/CustomText";
 import { useUploadFileMutation } from "../../redux/services/fileApi";
+import { useFetchMeQuery } from "../../redux/services/accountApi";
+import { ImSpinner3 } from "react-icons/im";
 
 interface CardProps {
   minW?: string | string[];
@@ -56,6 +60,7 @@ const BookCard = ({ minW, book }: CardProps) => {
     numOfChapter: book?.numOfChapter,
     // releaseDate: ""
   });
+  const { data: user } = useFetchMeQuery();
   const {
     isOpen: isUpdateModalOpen,
     onOpen: onUpdateModalOpen,
@@ -67,6 +72,21 @@ const BookCard = ({ minW, book }: CardProps) => {
     onOpen: onDelModalOpen,
     onClose: onDelModalClose,
   } = useDisclosure();
+  const isBookLiked = book?.likes?.includes(user?._id || "");
+
+  const { refetch: refetchLibBooks } = useFetchBooksQuery("?limit=12&page=1");
+  const { refetch: refetchLikedBooks } = useFetchBooksQuery(
+    `?limit=${50}&filter=${"liked"}&userId=${user?._id || ""}`
+  );
+  const { refetch: refetchDashLatest } = useFetchBooksQuery(
+    `?limit=${10}&page=${1}&filter=latest&userId=${user?._id || ""}`
+  );
+  const { refetch: refetchDashTopRated } = useFetchBooksQuery(
+    `?limit=${10}&page=${1}&filter=topRated&userId=${user?._id || ""}`
+  );
+  const { refetch: refetchDashLikedBooks } = useFetchBooksQuery(
+    `?limit=${10}&page=${1}&filter=liked&userId=${user?._id || ""}`
+  );
 
   const redirectUrl = () => {
     navigate(`/library/view-book/${book?._id}`);
@@ -143,6 +163,25 @@ const BookCard = ({ minW, book }: CardProps) => {
 
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
+
+  const [toggleLikedMutation, { isLoading: isToggleLikedLoading }] =
+    useToggleLikeMutation();
+  const toggleLiked = () => {
+    toggleLikedMutation({ bookId: book?._id })
+      .unwrap()
+      .then((resp) => {
+        showSuccess(resp?.message);
+        refetchLibBooks();
+        refetchLikedBooks();
+        refetchDashLatest();
+        refetchDashTopRated();
+        refetchDashLikedBooks();
+      })
+      .catch((err) => {
+        console.log(err);
+        showError(`Could not ${isBookLiked ? "unlike" : "like"} book`);
+      });
+  };
 
   const [updateBookMutation, { isLoading: isUpdateBookLoading }] =
     useUpdateBookMutation();
@@ -287,23 +326,32 @@ const BookCard = ({ minW, book }: CardProps) => {
             onClick={redirectUrl}
           ></Box>
         </Flex>
-        <Box onClick={redirectUrl}>
+        <Box>
           <Flex justify={"space-between"} mt={"8px"}>
             <Tooltip hasArrow label={book?.title}>
               <Heading
                 fontSize={["16px", "18px"]}
                 fontWeight={500}
                 textTransform={"capitalize"}
+                onClick={redirectUrl}
               >
                 {truncateText(book?.title, 12)}
               </Heading>
             </Tooltip>
-            <Flex gap={"5px"} align={"center"}>
-              <Icon
-                as={FaHeart}
-                fontSize={["14px", "16px"]}
-                color={"brand.dangerDark"}
-              />
+            <Flex gap={"5px"} align={"center"} onClick={toggleLiked}>
+              {isToggleLikedLoading ? (
+                <Icon
+                  as={ImSpinner3}
+                  fontSize={["14px", "16px"]}
+                  color={"brand.dangerDark"}
+                />
+              ) : (
+                <Icon
+                  as={isBookLiked ? FaHeart : FaRegHeart}
+                  fontSize={["14px", "16px"]}
+                  color={"brand.dangerDark"}
+                />
+              )}
               <Text
                 display={"inline-block"}
                 fontSize={"12px"}
@@ -313,7 +361,11 @@ const BookCard = ({ minW, book }: CardProps) => {
               </Text>
             </Flex>
           </Flex>
-          <Text color={"brand.textMuted"} textTransform={"capitalize"}>
+          <Text
+            color={"brand.textMuted"}
+            textTransform={"capitalize"}
+            onClick={redirectUrl}
+          >
             {book?.genre}
           </Text>
         </Box>

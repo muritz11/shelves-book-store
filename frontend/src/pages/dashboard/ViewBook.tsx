@@ -17,15 +17,21 @@ import LayoutContainerWrapper from "../../components/dashboard/LayoutContainerWr
 import LotteryBg from "../../assets/images/logo.png";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaHeart, FaStar } from "react-icons/fa";
-import { useFetchSingleBooksQuery } from "../../redux/services/bookApi";
+import {
+  useFetchBooksQuery,
+  useFetchSingleBooksQuery,
+  useToggleLikeMutation,
+} from "../../redux/services/bookApi";
 import { useEffect } from "react";
-import { showError } from "../../utils/Alert";
+import { showError, showSuccess } from "../../utils/Alert";
 import BookColumnCard from "../../components/cards/BookColumnCard";
+import { useFetchMeQuery } from "../../redux/services/accountApi";
 
 const ViewGame = () => {
   const { bid } = useParams();
   const [isSmallerThan1375] = useMediaQuery("(max-width: 1365px)");
   const [isLargerThan769] = useMediaQuery("(min-width: 769px)");
+  const { data: user } = useFetchMeQuery();
   const {
     isOpen: isAuthorModalOpen,
     onOpen: onAuthorModalOpen,
@@ -33,11 +39,18 @@ const ViewGame = () => {
   } = useDisclosure();
   const bookRating = 0;
   // const book = Books[Number(bid) - 1];
+  const { refetch: refetchLibBooks } = useFetchBooksQuery("?limit=12&page=1");
+  const { refetch: refetchLikedBooks } =
+    useFetchBooksQuery(
+      `?limit=${50}&filter=${"liked"}&userId=${user?._id || ""}`
+    );
   const {
     data: book,
     isLoading: isBookLoading,
     isError: isBookError,
+    refetch: refetchBook,
   } = useFetchSingleBooksQuery(bid || "");
+  const isBookLiked = book?.likes?.includes(user?._id || "");
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -46,6 +59,23 @@ const ViewGame = () => {
       showError("Could not fetch book");
     }
   }, [isBookError, navigate]);
+
+  const [toggleLikedMutation, { isLoading: isToggleLikedLoading }] =
+    useToggleLikeMutation();
+  const toggleLiked = () => {
+    toggleLikedMutation({ bookId: book?._id })
+      .unwrap()
+      .then((resp) => {
+        showSuccess(resp?.message);
+        refetchBook();
+        refetchLibBooks();
+        refetchLikedBooks();
+      })
+      .catch((err) => {
+        console.log(err);
+        showError(`Could not ${isBookLiked ? "unlike" : "like"} book`);
+      });
+  };
 
   return (
     <>
@@ -171,11 +201,13 @@ const ViewGame = () => {
             </Button>
             <Button
               size={"lg"}
-              variant={"danger"}
+              variant={isBookLiked ? "ghostDanger" : "danger"}
               alignSelf={"flex-start"}
               width={["full", "50%"]}
+              onClick={toggleLiked}
+              isLoading={isToggleLikedLoading}
             >
-              Add to favorites
+              {isBookLiked ? "Remove from favorites" : "Add to favorites"}
             </Button>
           </Flex>
         </Box>
