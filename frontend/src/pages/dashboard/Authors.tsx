@@ -462,7 +462,7 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
             <Text textTransform={"capitalize"}>{`${val?.name}`}</Text>
           </Flex>
         </Td>
-        <Td onClick={onUpdateModalOpen}>{truncateText(val?.bio, 70)}</Td>
+        <Td onClick={onUpdateModalOpen}>{truncateText(val?.bio, 40)}</Td>
         <Td pr={1}>
           <Flex align={"center"} justify={"flex-end"} gap={"10px"}>
             <Button

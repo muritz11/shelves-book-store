@@ -77,13 +77,7 @@ const Routes = () => {
         },
         {
           path: "search",
-          element: (
-            <div
-              style={{ width: "100%", textAlign: "center", marginTop: "100px" }}
-            >
-              coming soon
-            </div>
-          ),
+          element: <Search />,
         },
       ],
     },
@@ -98,5 +92,7 @@ const Library = Loadable(lazy(() => import("../pages/dashboard/Library")));
 const ViewBook = Loadable(lazy(() => import("../pages/dashboard/ViewBook")));
 const Authors = Loadable(lazy(() => import("../pages/dashboard/Authors")));
 const Settings = Loadable(lazy(() => import("../pages/dashboard/Settings")));
+
+const Search = Loadable(lazy(() => import("../pages/dashboard/Search")));
 
 export default Routes;

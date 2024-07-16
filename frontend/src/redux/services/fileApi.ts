@@ -1,5 +1,14 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
+import { AuthorObj, BookObj } from "../types";
 import baseQuery from "./customFetchBase";
+
+interface SearchResult {
+  success: boolean;
+  data: {
+    books: BookObj[];
+    authors: AuthorObj[];
+  };
+}
 
 export const fileApi = createApi({
   reducerPath: "fileApi",
@@ -12,7 +21,11 @@ export const fileApi = createApi({
         body: data,
       }),
     }),
+    search: builder.query<SearchResult, string>({
+      query: (query) => `/search?query=${query}`,
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
-export const { useUploadFileMutation } = fileApi;
+export const { useUploadFileMutation, useSearchQuery } = fileApi;

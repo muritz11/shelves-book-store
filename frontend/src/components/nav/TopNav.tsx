@@ -18,22 +18,29 @@ import { CiSearch } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logOutUser } from "../../redux/features/authSlice";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useFetchMeQuery } from "../../redux/services/accountApi";
+import { useQuery } from "../../pages/dashboard/Search";
 
 interface MobileProps extends FlexProps {
   onOpen: () => void;
 }
 
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+  const urlQuery = useQuery();
   const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const { data: user } = useFetchMeQuery();
 
   const logOut = () => {
-    // await signOut(auth);
     dispatch(logOutUser());
   };
+
+  useEffect(() => {
+    if (urlQuery?.query) {
+      setSearchQuery(urlQuery?.query);
+    }
+  }, [urlQuery?.query]);
 
   const navigate = useNavigate();
   const handleSearch = (e: ChangeEvent<HTMLFormElement>) => {
@@ -80,7 +87,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
             >
               <CiSearch size={22} />
               <Input
-                placeholder="Search"
+                placeholder="Search book or author by name"
                 border={"none"}
                 outline={"none"}
                 width={"100%"}
@@ -133,29 +140,6 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
               <MenuItem onClick={logOut}>Sign out</MenuItem>
             </MenuList>
           </Menu>
-
-          {/* <Box>
-            <Popover>
-              <PopoverTrigger>
-                <div>
-                  <FiBell
-                    fontSize={"20px"}
-                    color={"#48494C"}
-                    cursor={"pointer"}
-                  />
-                </div>
-              </PopoverTrigger>
-              <PopoverContent
-                borderRadius="16px"
-                boxShadow={"0px 4px 16px 0px #0000001F"}
-                width={{ base: "318px", md: "500px" }}
-                maxH={"87vh"}
-                overflowY="auto"
-              >
-                <NotificationModal />
-              </PopoverContent>
-            </Popover>
-          </Box> */}
         </Flex>
       </Flex>
     </Box>
