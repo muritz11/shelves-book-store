@@ -41,6 +41,7 @@ import { HiPencil } from "react-icons/hi2";
 import CustomInput from "../../utils/CustomInput";
 import CustomText from "../../utils/CustomText";
 import CustomDropdown from "../../utils/CustomDropdown";
+import { useUploadFileMutation } from "../../redux/services/fileApi";
 
 const Library = () => {
   const limit = 12;
@@ -159,7 +160,9 @@ const Library = () => {
 
   const [addBookMutation, { isLoading: isAddBookLoading }] =
     useAddBookMutation();
-  const handleSubmit = () => {
+  const [uploadFile, { isLoading: isUploadFileLoading }] =
+    useUploadFileMutation();
+  const handleSubmit = async () => {
     const { title, genre, author, synopsis, numOfChapter } = formState;
 
     const isFieldsEmpty = checkEmptyFields({
@@ -174,7 +177,16 @@ const Library = () => {
       const fd = { ...formState };
 
       if (file) {
-        // upload file & return secure_url
+        const fileForm = new FormData();
+        fileForm.append("file", file);
+
+        await uploadFile(fileForm)
+          .unwrap()
+          .then((resp) => {
+            // @ts-ignore
+            fd["coverUrl"] = resp?.data?.secure_url;
+          })
+          .catch((err) => console.log("could not upload photo", err));
       }
 
       addBookMutation(fd)
@@ -272,7 +284,7 @@ const Library = () => {
             </Menu>
           </Flex>
 
-          {/* games */}
+          {/* books */}
           <Box mt={"10px"}>
             {!isBooksFetching && !books?.data?.length ? (
               <Text textAlign={"center"} color={"brand.textMuted"} my={"100px"}>
@@ -387,7 +399,7 @@ const Library = () => {
               mt={5}
               mb={3}
               onClick={handleSubmit}
-              isLoading={isAddBookLoading}
+              isLoading={isAddBookLoading || isUploadFileLoading}
             >
               Add
             </Button>

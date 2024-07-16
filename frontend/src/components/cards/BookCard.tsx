@@ -34,6 +34,7 @@ import CustomDropdown from "../../utils/CustomDropdown";
 import CustomInput from "../../utils/CustomInput";
 import CustomModal from "../../utils/CustomModal";
 import CustomText from "../../utils/CustomText";
+import { useUploadFileMutation } from "../../redux/services/fileApi";
 
 interface CardProps {
   minW?: string | string[];
@@ -145,7 +146,9 @@ const BookCard = ({ minW, book }: CardProps) => {
 
   const [updateBookMutation, { isLoading: isUpdateBookLoading }] =
     useUpdateBookMutation();
-  const handleSubmit = () => {
+  const [uploadFile, { isLoading: isUploadFileLoading }] =
+    useUploadFileMutation();
+  const handleSubmit = async () => {
     const { title, genre, author, synopsis, numOfChapter } = formState;
 
     const isFieldsEmpty = checkEmptyFields({
@@ -160,7 +163,16 @@ const BookCard = ({ minW, book }: CardProps) => {
       const fd = { ...formState };
 
       if (file) {
-        // upload file & return secure_url
+        const fileForm = new FormData();
+        fileForm.append("file", file);
+
+        await uploadFile(fileForm)
+          .unwrap()
+          .then((resp) => {
+            // @ts-ignore
+            fd["coverUrl"] = resp?.data?.secure_url;
+          })
+          .catch((err) => console.log("could not upload photo", err));
       }
 
       updateBookMutation({ bid: book?._id, body: fd })
@@ -329,7 +341,7 @@ const BookCard = ({ minW, book }: CardProps) => {
               cursor={"pointer"}
               onClick={clickFileElem}
             >
-              <Avatar src={preview} boxSize={"100px"} />
+              <Avatar src={book?.coverUrl || preview} boxSize={"100px"} />
               <input
                 type="file"
                 ref={fileElement}
@@ -391,7 +403,7 @@ const BookCard = ({ minW, book }: CardProps) => {
             mt={5}
             mb={3}
             onClick={handleSubmit}
-            isLoading={isUpdateBookLoading}
+            isLoading={isUpdateBookLoading || isUploadFileLoading}
           >
             Update
           </Button>

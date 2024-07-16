@@ -12,7 +12,7 @@ interface FetchResult {
 export const bookApi = createApi({
   reducerPath: "bookApi",
   baseQuery,
-  tagTypes: ["books"],
+  tagTypes: ["books", "genres"],
   endpoints: (builder) => ({
     fetchBooks: builder.query<FetchResult, string | void>({
       query: (query) => `/books${query || ""}`,
@@ -20,6 +20,7 @@ export const bookApi = createApi({
     }),
     fetchGenres: builder.query<string[], string | void>({
       query: () => `/books/genres`,
+      providesTags: ["genres"],
       transformResponse: (result: { data: string[] }) => result.data,
     }),
     fetchSingleBooks: builder.query<SingleBookObj, string>({
@@ -32,7 +33,7 @@ export const bookApi = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["books"],
+      invalidatesTags: ["books", "genres"],
     }),
     updateBook: builder.mutation<any, any>({
       query: (data: { bid: string; body: any }) => ({
@@ -40,7 +41,7 @@ export const bookApi = createApi({
         method: "PUT",
         body: data.body,
       }),
-      invalidatesTags: ["books"],
+      invalidatesTags: ["books", "genres"],
     }),
     deleteBook: builder.mutation<any, any>({
       query: (aid) => ({

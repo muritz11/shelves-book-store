@@ -39,6 +39,7 @@ import CustomInput from "../../utils/CustomInput";
 import CustomText from "../../utils/CustomText";
 import Pagination from "../../utils/Pagination";
 import BookColumnCard from "../../utils/BookColumnCard";
+import { useUploadFileMutation } from "../../redux/services/fileApi";
 
 const Authors = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,7 +120,9 @@ const Authors = () => {
 
   const [addAuthor, { isLoading: isAddAuthorLoading }] =
     useAddAuthorsMutation();
-  const handleSubmit = () => {
+  const [uploadFile, { isLoading: isUploadFileLoading }] =
+    useUploadFileMutation();
+  const handleSubmit = async () => {
     const { name, bio } = formState;
 
     const isFieldsEmpty = checkEmptyFields({
@@ -128,10 +131,20 @@ const Authors = () => {
     });
 
     if (!isFieldsEmpty) {
-      const fd = { ...formState };
+      const fd: { name: string; bio: string; coverUrl?: string } = {
+        ...formState,
+      };
 
       if (file) {
-        // upload file & return secure_url
+        const fileForm = new FormData();
+        fileForm.append("file", file);
+
+        await uploadFile(fileForm)
+          .unwrap()
+          .then((resp) => {
+            fd["coverUrl"] = resp?.data?.secure_url;
+          })
+          .catch((err) => console.log("could not upload photo", err));
       }
 
       addAuthor(fd)
@@ -283,7 +296,7 @@ const Authors = () => {
             mt={5}
             mb={3}
             onClick={handleSubmit}
-            isLoading={isAddAuthorLoading}
+            isLoading={isAddAuthorLoading || isUploadFileLoading}
           >
             Add
           </Button>
@@ -394,7 +407,9 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
 
   const [updateAuthor, { isLoading: isUpdateAuthorLoading }] =
     useUpdateAuthorsMutation();
-  const handleSubmit = () => {
+  const [uploadFile, { isLoading: isUploadFileLoading }] =
+    useUploadFileMutation();
+  const handleSubmit = async () => {
     const { name, bio } = formState;
 
     const isFieldsEmpty = checkEmptyFields({
@@ -403,10 +418,20 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
     });
 
     if (!isFieldsEmpty) {
-      const fd = { ...formState };
+      const fd: { bio: string; name: string; coverUrl?: string } = {
+        ...formState,
+      };
 
       if (file) {
-        // upload db
+        const fileForm = new FormData();
+        fileForm.append("file", file);
+
+        await uploadFile(fileForm)
+          .unwrap()
+          .then((resp) => {
+            fd["coverUrl"] = resp?.data?.secure_url;
+          })
+          .catch((err) => console.log("could not upload photo", err));
       }
 
       updateAuthor({ body: fd, aid: val?._id || "" })
@@ -540,7 +565,7 @@ const RowItem = ({ val }: { val: AuthorObj }) => {
             mt={5}
             mb={3}
             onClick={handleSubmit}
-            isLoading={isUpdateAuthorLoading}
+            isLoading={isUpdateAuthorLoading || isUploadFileLoading}
           >
             Update
           </Button>
