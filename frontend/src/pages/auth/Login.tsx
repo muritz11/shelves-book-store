@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@chakra-ui/react";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import CustomInput from "../../utils/CustomInput";
 import AuthLayout from "./AuthLayout";
@@ -72,6 +72,16 @@ const Login = () => {
           onChange={handleInputs}
           mb="13px"
         />
+        <Box bg={"#FEEBC8"} rounded={"8px"} padding={3}>
+          <Flex gap={2}>
+            <Text fontWeight={500}>Email:</Text>
+            <Text>john@doe.com</Text>
+          </Flex>
+          <Flex gap={2}>
+            <Text fontWeight={500}>Password:</Text>
+            <Text>Pass1234$</Text>
+          </Flex>
+        </Box>
         <Button
           type="submit"
           colorScheme={"buttonPrimary"}
