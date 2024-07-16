@@ -37,16 +37,16 @@ export const updateProfile = async (request, response) => {
 
   const { body } = request;
 
-  const emailExist = await User.findOne({ email: body.email });
-  const curUser = await User.findById(request.user.userId);
-  if (emailExist) {
-    if (emailExist._id != request.user.userId) {
-      return response.status(400).send({
-        success: false,
-        message: "Email already exist",
-      });
-    }
-  }
+  // const emailExist = await User.findOne({ email: body.email });
+  const curUser = await User.findById(request.user._id);
+  // if (emailExist) {
+  //   if (emailExist._id != request.user.userId) {
+  //     return response.status(400).send({
+  //       success: false,
+  //       message: "Email already exist",
+  //     });
+  //   }
+  // }
 
   curUser.fullName = body?.fullName;
   curUser.coverUrl = body?.coverUrl;
@@ -67,19 +67,4 @@ export const updateProfile = async (request, response) => {
         data: error,
       });
     });
-};
-
-export const deleteUser = async (request, response) => {
-  const errors = validationResult(request);
-  if (!errors.isEmpty()) {
-    return response.status(400).json({ success: false, data: errors.array() });
-  }
-
-  const user = await User.deleteOne({ _id: request.body.userId });
-
-  response.status(200).send({
-    success: true,
-    message: "User deleted successfully",
-    data: user,
-  });
 };

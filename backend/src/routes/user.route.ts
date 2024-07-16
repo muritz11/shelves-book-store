@@ -4,7 +4,6 @@ import auth from "../middleware/auth";
 import {
   fetchUsers,
   updateProfile,
-  deleteUser,
   fetchMe,
 } from "../controllers/usersController";
 
@@ -13,22 +12,8 @@ const router = Router();
 // fetch profile
 router.get("/me", auth, fetchMe);
 
-
 // get all users
 router.get("/users", auth, fetchUsers);
-
-/**********************
-* endpoint request: 
-{
-    "userId": String
-}
-**********************/
-router.delete(
-  "/del-user",
-  body("userId").not().isEmpty().withMessage("user id is required"),
-  auth,
-  deleteUser
-);
 
 /**********************
 * route url: baseUrl/user/update-profile
