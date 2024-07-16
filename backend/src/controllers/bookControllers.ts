@@ -176,3 +176,47 @@ export const deleteBookById = async (request: Request, response: Response) => {
     });
   }
 };
+
+
+export const toggleLikeBook = async (req: Request, res: Response) => {
+  try {
+    const { bookId } = req.body;
+    // @ts-ignore
+    const userId = req.user._id;
+
+    const book = await Book.findById(bookId);
+
+    if (!book) {
+      return res.status(404).send({
+        success: false,
+        message: "Book not found",
+      });
+    }
+
+    const liked = book.likes.includes(userId);
+
+    if (liked) {
+      // @ts-ignore
+      book.likes.pull(userId);
+    } else {
+      book.likes.push(userId);
+    }
+
+    await book.save();
+
+    res.status(200).send({
+      success: true,
+      message: liked
+        ? "Book removed from favorites"
+        : "Book added to favorites",
+      data: book,
+    });
+  } catch (error) {
+    console.error("Error toggling like on book:", error);
+    res.status(500).send({
+      success: false,
+      message: "An error occurred while liking/unliking the book",
+      error: error,
+    });
+  }
+};

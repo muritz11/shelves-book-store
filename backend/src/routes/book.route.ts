@@ -6,6 +6,7 @@ import {
   fetchBooksById,
   fetchGenres,
   newBook,
+  toggleLikeBook,
   updateBookById,
 } from "../controllers/bookControllers";
 import auth from "../middleware/auth";
@@ -22,6 +23,19 @@ router.get("/", fetchBooks);
  * fetch all books
  **********************/
 router.get("/genres", fetchGenres);
+
+/**********************
+ * like book
+ * req body: 
+  { bookId: string }
+**********************/
+router.post(
+  "/toggle-like",
+  body("*").trim(),
+  body("bookId").not().isEmpty().withMessage("book Id is required"),
+  auth,
+  toggleLikeBook
+);
 
 /**********************
  * fetch book by id
