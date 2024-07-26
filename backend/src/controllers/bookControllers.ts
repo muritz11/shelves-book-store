@@ -17,36 +17,39 @@ export const fetchBooks = async (request: Request, response: Response) => {
     query.genre = genre;
   }
 
-  let books;
-  if (filter === "topRated") {
-    // Use aggregation to calculate average rating and sort by it
-    books = await Book.aggregate([
-      { $match: query },
-      {
-        $lookup: {
-          from: "ratings",
-          localField: "_id",
-          foreignField: "book",
-          as: "ratings",
-        },
+  const booksAggregation = [
+    { $match: query },
+    {
+      $lookup: {
+        from: "ratings",
+        localField: "_id",
+        foreignField: "book",
+        as: "ratings",
       },
-      {
-        $addFields: {
-          averageRating: { $avg: "$ratings.rating" },
-        },
+    },
+    {
+      $addFields: {
+        averageRating: { $avg: "$ratings.rating" },
       },
-      { $sort: { averageRating: -1, createdAt: -1 } },
-      { $skip: (Number(page) - 1) * Number(limit) },
-      { $limit: Number(limit) },
-    ]).exec();
-  } else {
-    books = await Book.find(query)
-      .populate("author")
-      .populate("rating")
-      .limit(Number(limit) * 1)
-      .skip((Number(page) - 1) * Number(limit))
-      .sort({ createdAt: -1 });
-  }
+    },
+    {
+      $sort:
+        filter === "topRated"
+          ? { averageRating: -1, createdAt: -1 }
+          : { createdAt: -1 },
+    },
+    { $skip: (Number(page) - 1) * Number(limit) },
+    { $limit: Number(limit) },
+  ];
+
+  // @ts-ignore
+  const books = await Book.aggregate(booksAggregation).exec();
+  // books = await Book.find(query)
+  //   .populate("author")
+  //   .populate("rating")
+  //   .limit(Number(limit) * 1)
+  //   .skip((Number(page) - 1) * Number(limit))
+  //   .sort({ createdAt: -1 });
 
   const count = await Book.countDocuments(query);
 
@@ -56,7 +59,7 @@ export const fetchBooks = async (request: Request, response: Response) => {
     total: count,
     currentPage: page,
   });
-};
+};;
 
 export const fetchBooksById = async (request: Request, response: Response) => {
   const { bookId } = request.params;
