@@ -11,9 +11,8 @@ interface CardProps {
   book: BookObj;
 }
 
-const LotteryGameCardMini = ({ book }: CardProps) => {
+const BookCardMini = ({ book }: CardProps) => {
   const navigate = useNavigate();
-  const bookRating = 0;
 
   const redirectUrl = () => {
     navigate(`/library/view-book/${book?._id}`);
@@ -56,7 +55,7 @@ const LotteryGameCardMini = ({ book }: CardProps) => {
               color={"brand.secondary"}
             />
             <Text display={"inline-block"} fontSize={"10px"} color={"#48494D"}>
-              {bookRating || 0}
+              {book?.averageRating || 0}
             </Text>
           </Flex>
         </Flex>
@@ -89,4 +88,4 @@ const LotteryGameCardMini = ({ book }: CardProps) => {
   );
 };
 
-export default LotteryGameCardMini;
+export default BookCardMini;

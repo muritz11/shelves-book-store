@@ -23,6 +23,19 @@ const Signup = () => {
     setFormState({ ...formState, [name]: value });
   };
 
+  const capsRegex = new RegExp(/[A-Z]/);
+  const numberRegex = new RegExp(/\d/);
+  const specialCharRegex = new RegExp(/[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/);
+  const testPasswordRegex = (password: string) => {
+    if (!capsRegex.test(password)) return false;
+
+    if (!numberRegex.test(password)) return false;
+
+    if (!specialCharRegex.test(password)) return false;
+
+    return true;
+  };
+
   const submitForm = async (e: any) => {
     e.preventDefault();
     const { email, password, fullName } = formState;
@@ -36,6 +49,13 @@ const Signup = () => {
     if (!isFormEmpty) {
       if (password.length < 8) {
         showError("Password should be at least 8 characters");
+        return;
+      }
+
+      if (!testPasswordRegex(formState.password)) {
+        showError(
+          "Password must have a capital letter, number and special character"
+        );
         return;
       }
 

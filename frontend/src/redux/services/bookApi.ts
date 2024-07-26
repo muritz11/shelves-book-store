@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { BookObj, SingleBookObj } from "../types";
+import { BookObj, RateObjII, SingleBookObj } from "../types";
 import baseQuery from "./customFetchBase";
 
 interface FetchResult {
@@ -26,6 +26,23 @@ export const bookApi = createApi({
     fetchSingleBooks: builder.query<SingleBookObj, string>({
       query: (bid) => `/books/${bid}`,
       transformResponse: (result: { data: SingleBookObj }) => result.data,
+    }),
+    fetchBookRatings: builder.query<RateObjII[], string>({
+      query: (bid) => `/rating/${bid}`,
+      transformResponse: (result: { data: RateObjII[] }) => result.data,
+    }),
+    rateBook: builder.mutation<any, any>({
+      query: (data) => ({
+        url: `/rating/${data.bid}`,
+        method: "POST",
+        body: data.body,
+      }),
+    }),
+    deleteReview: builder.mutation<any, string>({
+      query: (rid) => ({
+        url: `/rating/${rid}`,
+        method: "Delete",
+      }),
     }),
     toggleLike: builder.mutation<any, any>({
       query: (data) => ({
@@ -68,4 +85,7 @@ export const {
   useUpdateBookMutation,
   useDeleteBookMutation,
   useToggleLikeMutation,
+  useFetchBookRatingsQuery,
+  useRateBookMutation,
+  useDeleteReviewMutation,
 } = bookApi;

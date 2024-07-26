@@ -48,6 +48,7 @@ const Routes = () => {
     {
       path: "/",
       element: <RoutesAuth children={<Layout />} />,
+      errorElement: <ErrorPage />,
       children: [
         {
           path: "dashboard",

@@ -3,6 +3,7 @@ export interface BookObj {
   _id?: string;
   title: string;
   genre: string;
+  averageRating?: number;
   author: {
     name: string;
     _id: string;
@@ -12,7 +13,7 @@ export interface BookObj {
   likes?: string[];
   reader?: string[];
   numOfChapter: number;
-  rating?: { user?: string; rating?: number }[];
+  ratings?: RateObj[];
   isFeatured?: boolean;
 }
 
@@ -29,6 +30,26 @@ export interface SingleBookObj {
   rating?: { user?: string; rating?: number }[];
   isFeatured?: boolean;
   authorsBooks?: BookObj[];
+}
+
+export interface RateObj {
+  _id: string;
+  user: string;
+  book: string;
+  rating: number;
+  review: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RateObjII {
+  _id: string;
+  user: { fullName: string; coverUrl: string; _id: string };
+  book: string;
+  rating: number;
+  review: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AuthorObj {

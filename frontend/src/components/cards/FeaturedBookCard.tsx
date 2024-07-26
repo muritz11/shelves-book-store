@@ -62,7 +62,7 @@ const FeaturedBookCard = ({ book }: { book: BookObj }) => {
               color={"brand.secondary"}
             />
             <Text display={"inline-block"} fontSize={"12px"} color={"#48494D"}>
-              {0}
+              {book?.averageRating || 0}
             </Text>
           </Flex>
         </Flex>

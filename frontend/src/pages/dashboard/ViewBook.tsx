@@ -12,20 +12,30 @@ import {
   ModalOverlay,
   useMediaQuery,
   Icon,
+  FormLabel,
 } from "@chakra-ui/react";
 import LayoutContainerWrapper from "../../components/dashboard/LayoutContainerWrapper";
 import LotteryBg from "../../assets/images/logo.png";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaHeart, FaStar } from "react-icons/fa";
 import {
+  useDeleteReviewMutation,
+  useFetchBookRatingsQuery,
   useFetchBooksQuery,
   useFetchSingleBooksQuery,
+  useRateBookMutation,
   useToggleLikeMutation,
 } from "../../redux/services/bookApi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { showError, showSuccess } from "../../utils/Alert";
 import BookColumnCard from "../../components/cards/BookColumnCard";
 import { useFetchMeQuery } from "../../redux/services/accountApi";
+import { capitalizeText } from "../../utils/helpers";
+import RateStars from "../../utils/RateStars";
+import { DateTime } from "luxon";
+import CustomModal from "../../utils/CustomModal";
+import CustomText from "../../utils/CustomText";
+import Loader from "../../utils/Loader";
 
 const ViewGame = () => {
   const { bid } = useParams();
@@ -37,13 +47,11 @@ const ViewGame = () => {
     onOpen: onAuthorModalOpen,
     onClose: onAuthorModalClose,
   } = useDisclosure();
-  const bookRating = 0;
   // const book = Books[Number(bid) - 1];
   const { refetch: refetchLibBooks } = useFetchBooksQuery("?limit=12&page=1");
-  const { refetch: refetchLikedBooks } =
-    useFetchBooksQuery(
-      `?limit=${50}&filter=${"liked"}&userId=${user?._id || ""}`
-    );
+  const { refetch: refetchLikedBooks } = useFetchBooksQuery(
+    `?limit=${50}&filter=${"liked"}&userId=${user?._id || ""}`
+  );
   const {
     data: book,
     isLoading: isBookLoading,
@@ -51,6 +59,19 @@ const ViewGame = () => {
     refetch: refetchBook,
   } = useFetchSingleBooksQuery(bid || "");
   const isBookLiked = book?.likes?.includes(user?._id || "");
+
+  const { data: bookRating } = useFetchBookRatingsQuery(bid || "");
+
+  let avgRating;
+  if (!bookRating?.length) {
+    avgRating = 0;
+  } else {
+    const totalRating = bookRating.reduce(
+      (sum, ratingObj) => sum + ratingObj.rating,
+      0
+    );
+    avgRating = totalRating / bookRating.length;
+  }
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -97,13 +118,13 @@ const ViewGame = () => {
           ]}
           gap={"15px"}
         >
-          <Flex gap={"10px"}>
+          <Flex gap={"10px"} direction={["column", "row"]} align={["center"]}>
             <Avatar
               src={book?.coverUrl || LotteryBg}
               bg={"brand.black"}
               boxSize={"120px"}
             />
-            <Flex flexDir={"column"} gap={"5px"}>
+            <Flex flexDir={"column"} gap={"5px"} textAlign={["center", "left"]}>
               <Text
                 fontSize={"20px"}
                 fontWeight={700}
@@ -133,7 +154,7 @@ const ViewGame = () => {
               >
                 Genre: {book?.genre}
               </Text>
-              <Flex gap={2}>
+              <Flex gap={2} justify={["center", "flex-start"]}>
                 <Flex
                   padding={"2px 5px"}
                   bg={"brand.secondaryTint"}
@@ -152,7 +173,7 @@ const ViewGame = () => {
                     fontSize={"12px"}
                     color={"#48494D"}
                   >
-                    {bookRating || 0}
+                    {avgRating}
                   </Text>
                 </Flex>
                 <Flex
@@ -261,19 +282,205 @@ const ViewGame = () => {
  ************************/
 const Aside = () => {
   const { bid } = useParams();
+  const [formState, setFormState] = useState({
+    rating: 0,
+    review: "",
+  });
 
   const { data: book } = useFetchSingleBooksQuery(bid || "");
+  const { data: user } = useFetchMeQuery();
+  const {
+    data: bookRating,
+    isLoading: isRatingsLoading,
+    refetch: refetchRatings,
+  } = useFetchBookRatingsQuery(bid || "");
+
+  let avgRating;
+  let alreadyReviewed = 0;
+  if (!bookRating?.length) {
+    avgRating = 0;
+  } else {
+    const totalRating = bookRating.reduce(
+      (sum, ratingObj) => sum + ratingObj.rating,
+      0
+    );
+    avgRating = totalRating / bookRating.length;
+
+    alreadyReviewed = bookRating?.filter(
+      (val) => val?.user?._id === user?._id
+    )?.length;
+  }
+
+  const {
+    isOpen: isReviewModalOpen,
+    onOpen: onReviewModalOpen,
+    onClose: onReviewModalClose,
+  } = useDisclosure();
+
+  const [deleteReviewMutation, { isLoading: isDeleteReviewLoading }] =
+    useDeleteReviewMutation();
+  const deleteReview = (rid: string) => {
+    deleteReviewMutation(rid)
+      .unwrap()
+      .then(() => {
+        showSuccess("Review deleted");
+        refetchRatings();
+      })
+      .catch((err) => {
+        showError(
+          err?.message ||
+            err?.error?.message ||
+            "An error occurred, try again later"
+        );
+      });
+  };
+
+  const [rateBook, { isLoading: isRateBookLoading }] = useRateBookMutation();
+  const submitReview = () => {
+    rateBook({ bid, body: { ...formState } })
+      .unwrap()
+      .then(() => {
+        showSuccess("Review submitted successfully");
+        setFormState({
+          rating: 0,
+          review: "",
+        });
+        refetchRatings();
+        onReviewModalClose();
+      })
+      .catch((err) => {
+        showError(
+          err?.message ||
+            err?.error?.message ||
+            "An error occurred, try again later"
+        );
+      });
+  };
 
   return (
     <>
-      <Box>
-        <Text fontWeight={500} mb={3}>
-          Other books by {book?.author?.name}
+      <Box mb={7}>
+        <Text fontWeight={500} mb={2} fontSize={"18px"}>
+          Ratings and reviews
         </Text>
-        {book?.authorsBooks?.map((value) => (
-          <BookColumnCard book={value} key={value?._id} />
-        ))}
+        {!isRatingsLoading ? (
+          <Box>
+            <Flex align={"center"} gap={2}>
+              <Text fontWeight={500}>{avgRating}</Text>
+              <RateStars rating={avgRating} />
+              <Text fontSize={"12px"}>
+                ({bookRating?.length} total ratings)
+              </Text>
+            </Flex>
+            {bookRating?.map((rating) => {
+              const dateTime = DateTime.fromISO(rating?.createdAt);
+              // @ts-ignore
+              const date = dateTime.toRelativeCalendar();
+
+              return (
+                <Box key={rating?._id}>
+                  <Box as="hr" my={4} />
+                  <Flex align={"center"} gap={2}>
+                    <Avatar src={rating?.user?.coverUrl} boxSize={"28px"} />
+                    <Text>{capitalizeText(rating?.user?.fullName)}</Text>
+                    {rating?.user?._id === user?._id ? (
+                      <Button
+                        variant={"link"}
+                        onClick={() => deleteReview(rating?._id)}
+                        size={"xs"}
+                        fontWeight={400}
+                        color={"brand.danger"}
+                        isLoading={isDeleteReviewLoading}
+                      >
+                        Delete
+                      </Button>
+                    ) : (
+                      ""
+                    )}
+                  </Flex>
+                  <Flex align={"center"} gap={2} my={2}>
+                    <RateStars mini={true} rating={rating?.rating} />
+                    <Text fontSize={"12px"}>{date}</Text>
+                  </Flex>
+                  <Text fontSize={"14px"}>{rating?.review}</Text>
+                </Box>
+              );
+            })}
+            {!alreadyReviewed ? (
+              <Button
+                variant={"link"}
+                width={"full"}
+                onClick={onReviewModalOpen}
+                mt={3}
+                size={"sm"}
+                fontWeight={400}
+              >
+                Write review
+              </Button>
+            ) : (
+              ""
+            )}
+          </Box>
+        ) : (
+          ""
+        )}
+        <Loader isLoading={isRatingsLoading} height={"100px"} />
       </Box>
+      <Box>
+        <Text fontWeight={500} mb={2} fontSize={"18px"}>
+          Other books by {capitalizeText(book?.author?.name || "")}
+        </Text>
+        {book?.authorsBooks
+          ?.filter((val) => val?._id !== book?._id)
+          ?.map((value) => (
+            <BookColumnCard book={value} key={value?._id} />
+          ))}
+        {!book?.authorsBooks?.filter((val) => val?._id !== book?._id)
+          ?.length ? (
+          <Text color={"brand.textMuted"} fontSize={"14px"}>
+            This author has no other publications
+          </Text>
+        ) : (
+          ""
+        )}
+      </Box>
+
+      <CustomModal
+        isOpen={isReviewModalOpen}
+        onClose={onReviewModalClose}
+        title={"Write review"}
+      >
+        <Flex direction={"column"} gap={3}>
+          <Box>
+            <FormLabel fontSize={"16px"} fontWeight={500}>
+              How would you rate this book
+            </FormLabel>
+            <RateStars
+              rating={formState.rating}
+              setRating={(val) => setFormState({ ...formState, rating: val })}
+            />
+          </Box>
+          <CustomText
+            label="Review"
+            name="review"
+            placeholder="Optional"
+            value={formState.review}
+            onChange={({ target }) => {
+              setFormState({ ...formState, review: target.value });
+            }}
+          />
+          <Button
+            variant={"primary"}
+            width={"full"}
+            mt={5}
+            mb={3}
+            onClick={submitReview}
+            isLoading={isRateBookLoading}
+          >
+            Submit
+          </Button>
+        </Flex>
+      </CustomModal>
     </>
   );
 };

@@ -47,8 +47,6 @@ interface CardProps {
 
 const BookCard = ({ minW, book }: CardProps) => {
   const navigate = useNavigate();
-  // TODO: calc rating
-  const bookRating = 0;
   const fileElement: { current: any } | null = useRef(null);
   const [file, setFile] = useState<File | undefined>();
   const [preview, setPreview] = useState<string>("");
@@ -288,7 +286,7 @@ const BookCard = ({ minW, book }: CardProps) => {
                 fontSize={"12px"}
                 color={"#48494D"}
               >
-                {bookRating || 0}
+                {book?.averageRating || 0}
               </Text>
             </Flex>
 
