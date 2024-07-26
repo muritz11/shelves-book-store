@@ -85,7 +85,7 @@ router.put(
 
 /**********************
  * delete book
- * req params: { authorId }
+ * req params: { bookId }
  **********************/
 router.delete("/:bookId", auth, deleteBookById);
 

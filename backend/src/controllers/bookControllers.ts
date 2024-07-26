@@ -11,29 +11,41 @@ export const fetchBooks = async (request: Request, response: Response) => {
   // Apply filter based on query parameters
   if (filter === "featured") {
     query.isFeatured = true;
-  } else if (filter === "topRated") {
-    query.rating = { $exists: true, $ne: [] };
   } else if (filter === "liked" && userId) {
     query.likes = { $elemMatch: { $eq: userId } };
   } else if (filter === "genre" && genre) {
-    query.genre = genre
+    query.genre = genre;
   }
 
-  const books = await Book.find(query)
-    .populate("author")
-    .limit(Number(limit) * 1)
-    .skip((Number(page) - 1) * Number(limit))
-    .sort({ createdAt: -1 });
-
-  // If filtering by top rated, sort by average rating
+  let books;
   if (filter === "topRated") {
-    books.sort((a, b) => {
-      const avgRatingA =
-        a.rating.reduce((sum, r) => sum + r.rating, 0) / a.rating.length || 0;
-      const avgRatingB =
-        b.rating.reduce((sum, r) => sum + r.rating, 0) / b.rating.length || 0;
-      return avgRatingB - avgRatingA;
-    });
+    // Use aggregation to calculate average rating and sort by it
+    books = await Book.aggregate([
+      { $match: query },
+      {
+        $lookup: {
+          from: "ratings",
+          localField: "_id",
+          foreignField: "book",
+          as: "ratings",
+        },
+      },
+      {
+        $addFields: {
+          averageRating: { $avg: "$ratings.rating" },
+        },
+      },
+      { $sort: { averageRating: -1, createdAt: -1 } },
+      { $skip: (Number(page) - 1) * Number(limit) },
+      { $limit: Number(limit) },
+    ]).exec();
+  } else {
+    books = await Book.find(query)
+      .populate("author")
+      .populate("rating")
+      .limit(Number(limit) * 1)
+      .skip((Number(page) - 1) * Number(limit))
+      .sort({ createdAt: -1 });
   }
 
   const count = await Book.countDocuments(query);
@@ -176,7 +188,6 @@ export const deleteBookById = async (request: Request, response: Response) => {
     });
   }
 };
-
 
 export const toggleLikeBook = async (req: Request, res: Response) => {
   try {
