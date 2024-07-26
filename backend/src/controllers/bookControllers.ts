@@ -33,6 +33,17 @@ export const fetchBooks = async (request: Request, response: Response) => {
       },
     },
     {
+      $lookup: {
+        from: "authors",
+        localField: "author",
+        foreignField: "_id",
+        as: "author",
+      },
+    },
+    {
+      $unwind: "$author",
+    },
+    {
       $sort:
         filter === "topRated"
           ? { averageRating: -1, createdAt: -1 }
@@ -41,15 +52,8 @@ export const fetchBooks = async (request: Request, response: Response) => {
     { $skip: (Number(page) - 1) * Number(limit) },
     { $limit: Number(limit) },
   ];
-
   // @ts-ignore
   const books = await Book.aggregate(booksAggregation).exec();
-  // books = await Book.find(query)
-  //   .populate("author")
-  //   .populate("rating")
-  //   .limit(Number(limit) * 1)
-  //   .skip((Number(page) - 1) * Number(limit))
-  //   .sort({ createdAt: -1 });
 
   const count = await Book.countDocuments(query);
 
@@ -59,7 +63,7 @@ export const fetchBooks = async (request: Request, response: Response) => {
     total: count,
     currentPage: page,
   });
-};;
+};
 
 export const fetchBooksById = async (request: Request, response: Response) => {
   const { bookId } = request.params;
