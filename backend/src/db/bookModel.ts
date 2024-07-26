@@ -10,6 +10,7 @@ interface IBook extends Document {
   numOfChapter: number;
   likes?: Types.ObjectId[];
   readers?: Types.ObjectId[];
+  rating?: Types.ObjectId[];
   isFeatured?: boolean;
 }
 
@@ -24,6 +25,7 @@ const BookSchema = new Schema<IBook>(
     numOfChapter: { type: Number, required: true },
     likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
     readers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    rating: [{ type: Schema.Types.ObjectId, ref: "Rating" }],
     isFeatured: { type: Boolean, default: false },
   },
   {

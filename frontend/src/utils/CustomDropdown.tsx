@@ -62,7 +62,7 @@ const CustomDropdown = ({
             {dropdownValue || "Select"}
           </Text>
         </MenuButton>
-        <MenuList>
+        <MenuList maxH={"400px"} overflowY={"auto"}>
           {dropdownItems?.map((val, idx) => (
             <MenuItem
               key={`drp-${val?.name}-${idx}`}
