@@ -6,6 +6,7 @@ This is an Online Library project built to manage and explore a collection of bo
 - Node.js
 - Express.js
 - TypeScript
+- MongoDB
 
 ### Frontend tools
 - React
