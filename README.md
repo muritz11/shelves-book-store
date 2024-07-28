@@ -18,6 +18,8 @@ This is an Online Library project built to manage and explore a collection of bo
 - User Authentication and Authorization
 - Book and Author Management
 - Search and Filter Books
+- Ratings and review
+- Add to favorites
 - User Profile Management
 - Responsive Design
 
